@@ -1,9 +1,12 @@
 import customtkinter as ctk
-
-
-class Dashboard(ctk.CTkFrame):
+import ttkbootstrap as ttk
+class DashboardData:
+    def __init__(self):
+        pass
+class Dashboard(ttk.Frame):
     def __init__(self, master):
         super().__init__(master)
-        self.configure(width=400)
-        self.title = ctk.CTkLabel(self, text="Dashboard").pack(fill="x")
+        self.title = ttk.Label(self, text="Dashboard", font=("Helvetica", 20, "bold"), foreground="black")
+        self.title.pack(fill="x")
+
 
