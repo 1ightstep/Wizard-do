@@ -52,39 +52,43 @@ class TaskForm(ttk.LabelFrame):
         self.color_tag_mb.configure(style=style_dict[color_tag])
 
 
-class Task(ttk.Frame):
-    def __init__(self, master, task_id, task_name, task_tag, task_date, destroy_func):
+class Task(ttk.LabelFrame):
+    def __init__(self, master, task_id, task_name, task_tag, task_date, destroy_func, done_func):
         self.styles = {
             "Red": {
-                "TFrame": "danger.TFrame",
+                "TLabelframe": "danger",
                 "TLabel": "danger.TLabel",
-                "TButton": "danger.TButton"
+                "TButton": "danger.TButton",
+                "TCheckbutton": "danger.TCheckbutton"
             },
             "Orange": {
-                "TFrame": "warning.TFrame",
+                "TLabelframe": "warning",
                 "TLabel": "warning.TLabel",
-                "TButton": "warning.TButton"
+                "TButton": "warning.TButton",
+                "TCheckbutton": "warning.TCheckbutton"
             },
             "Blue": {
-                "TFrame": "info.TFrame",
+                "TLabelframe": "info",
                 "TLabel": "info.TLabel",
-                "TButton": "info.TButton"
+                "TButton": "info.TButton",
+                "TCheckbutton": "info.TCheckbutton"
             },
             "Green": {
-                "TFrame": "success.TFrame",
+                "TLabelframe": "success",
                 "TLabel": "success.TLabel",
-                "TButton": "success.TButton"
+                "TButton": "success.TButton",
+                "TCheckbutton": "success.TCheckbutton"
             }
         }
 
-        super().__init__(master=master, style=self.styles[task_tag]["TFrame"])
-
+        super().__init__(master=master, text=task_date, bootstyle=self.styles[task_tag]["TLabelframe"], padding=5)
+        self.done_btn = ttk.Checkbutton(self, style=self.styles[task_tag]["TCheckbutton"], command=lambda: done_func(task_id))
+        self.done_btn.pack(side="left")
         self.task_name = ttk.Label(self, text=task_name, style=self.styles[task_tag]["TLabel"])
         self.task_name.pack(side="left")
-        self.task_date = ttk.Label(self, text=task_date, style=self.styles[task_tag]["TLabel"])
-        self.task_date.pack(side="left")
-        self.destroy_btn = ttk.Button(self, text="X", style="danger.TButton", command=lambda: destroy_func(task_id))
-        self.destroy_btn.pack(side="left")
+
+        self.destroy_btn = ttk.Button(self, text="Destroy", style=self.styles[task_tag]["TButton"], command=lambda: destroy_func(task_id))
+        self.destroy_btn.pack(side="right")
 
 
 class TasksView(ttk.LabelFrame):
@@ -94,7 +98,12 @@ class TasksView(ttk.LabelFrame):
         self.tasks_container.pack(fill="both", expand=True)
 
     def add_task(self, task_widget):
-        task_widget.pack()
+        task_widget.pack(side="top", padx=10, fill="both", expand=True)
+
+
+class TasksViewFilter(ttk.LabelFrame):
+    def __init__(self, master):
+        super().__init__(master, text="Task Filters")
 
 
 class Tasks(ttk.Frame):
@@ -105,8 +114,10 @@ class Tasks(ttk.Frame):
         self.title.pack(fill="x")
         self.task_form = TaskForm(self, self.create_task)
         self.task_form.pack(fill="x", ipady=10)
+        self.tasks_view_filter = TasksViewFilter(self)
+        self.tasks_view_filter.pack(side="left", fill="both", expand=True)
         self.tasks_view = TasksView(self)
-        self.tasks_view.pack(fill="both", expand=True)
+        self.tasks_view.pack(side="left", fill="both", expand=True)
 
     def create_task(self, task_name="", task_tag="Blue", task_date=""):
         task_id = uuid.uuid4()
@@ -116,14 +127,16 @@ class Tasks(ttk.Frame):
             task_name=task_name,
             task_tag=task_tag,
             task_date=task_date,
-            destroy_func=self.destroy_task
+            destroy_func=self.destroy_task,
+            done_func=self.task_done
         )
         self.task_list.append({
             "task_id": task_id,
             "task_name": task_name,
             "task_tag": task_tag,
             "task_date": task_date,
-            "task_widget": task_widget
+            "task_widget": task_widget,
+            "task_status": "ongoing"
         })
         self.tasks_view.add_task(task_widget)
 
@@ -132,3 +145,8 @@ class Tasks(ttk.Frame):
             if task["task_id"] == task_id:
                 task["task_widget"].destroy()
                 self.task_list.remove(task)
+
+    def task_done(self, task_id):
+        for task in self.task_list:
+            if task["task_id"] == task_id:
+                task["task_status"] = "done"
