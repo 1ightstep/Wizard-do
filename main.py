@@ -1,14 +1,17 @@
 import ttkbootstrap as ttk
-from ttkbootstrap import Style
 from components import navbar
-from pages import dashboard, settings, tasks
+from pages.settings import settings
+from pages.dashboard import dashboard
+from pages.tasks import tasks
+
+
 class Main(ttk.Window):
     def __init__(self):
         super().__init__(themename="yeti")
         self.title("Wizard-do")
-        self.geometry("700x500")
+        self.geometry("1000x600")
         self.current_page = "dashboard"
-        self.resizable(False, False)
+        self.resizable(True, True)
 
         self.navbar = (navbar.Navbar(self, "gray", self.page_display_logic).pack(side="left", fill="y"))
         self.dashboard_page = dashboard.Dashboard(self)
