@@ -23,7 +23,7 @@ class Tasks(ttk.Frame):
         self.tasks_view = TasksView(self)
         self.tasks_view.pack(side="left", fill="both", expand=True)
 
-    def create_task(self, task_name="", task_tag="Blue", task_date=""):
+    def create_task(self, task_name="", task_tag="Blue", task_date="", task_time=""):
         task_id = uuid.uuid4()
         task_widget = Task(
             master=self.tasks_view.tasks_container,
@@ -31,6 +31,7 @@ class Tasks(ttk.Frame):
             task_name=task_name,
             task_tag=task_tag,
             task_date=task_date,
+            task_time=task_time,
             destroy_func=self.destroy_task,
             done_func=self.task_done
         )
@@ -39,6 +40,7 @@ class Tasks(ttk.Frame):
             "task_name": task_name,
             "task_tag": task_tag,
             "task_date": task_date,
+            "task_time": task_time,
             "task_widget": task_widget,
             "task_status": "ongoing"
         })

@@ -45,20 +45,23 @@ class TaskForm(ttk.LabelFrame):
         self.task_name_input = placeholder_entry.PlaceholderEntry(self, placeholder="Task", style="primary.TEntry")
         self.task_name_input.pack(padx=5, side="left", fill="x", expand=True)
 
-        self.calender = ttk.DateEntry(self)
-        self.calender.pack(padx=5, side="left", fill="x", expand=True)
+        self.date_time_label_frame = ttk.LabelFrame(self, text="Dtae ")
+
+        self.date_selector = ttk.DateEntry(self)
+        self.date_selector.pack(padx=5, side="left", fill="x", expand=True)
 
         self.time_selector = TimeSelector(self)
-        self.time_selector.pack(side='left', fill="x")
+        self.time_selector.pack(padx=5, side='left', fill="x")
 
         self.submit_btn = ttk.Button(self, text="Create", command=self.create_task)
-        self.submit_btn.pack(padx=5, side="left", expand=True)
+        self.submit_btn.pack(padx=5, side="left", fill="x", expand=True)
 
     def create_task(self):
         self.submit_func(
             self.task_name_input.get(),
             self.color_tag_var.get() if self.color_tag_var.get() else "Blue",
-            self.calender.entry.get()
+            self.date_selector.entry.get(),
+            self.time_selector.get_time()
         )
 
     def update_mb_style(self, color_tag):
