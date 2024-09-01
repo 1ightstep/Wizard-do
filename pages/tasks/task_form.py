@@ -3,6 +3,24 @@ import tkinter as tk
 from components import placeholder_entry
 
 
+class TimeSelector(ttk.Frame):
+    def __init__(self, master=None, **kwargs):
+        super().__init__(master, **kwargs)
+
+        self.hour = tk.StringVar(value="00")
+        self.minute = tk.StringVar(value="00")
+
+        self.hour_spinbox = ttk.Spinbox(self, from_=0, to=23, wrap=True, textvariable=self.hour, width=2)
+        self.colon_label = ttk.Label(self, text=":")
+        self.minute_spinbox = ttk.Spinbox(self, from_=0, to=59, wrap=True, textvariable=self.minute, width=2)
+
+        self.hour_spinbox.pack(side=tk.LEFT)
+        self.colon_label.pack(side=tk.LEFT)
+        self.minute_spinbox.pack(side=tk.LEFT)
+
+    def get_time(self):
+        return f"{self.hour.get():02d}:{self.minute.get():02d}"
+
 class TaskForm(ttk.LabelFrame):
     def __init__(self, master, submit_func):
         super().__init__(master, text="Task Creation")

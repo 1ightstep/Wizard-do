@@ -34,6 +34,8 @@ class Database:
             f.write(str(data_object)+"\n")
             f.close()
 
+    def delete_data(self, category_name: str, ):
+
 if __name__ == "__main__":
     test = Database("/database")
     test.create_data_category("tasks")
