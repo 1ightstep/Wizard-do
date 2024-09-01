@@ -21,6 +21,7 @@ class TimeSelector(ttk.Frame):
     def get_time(self):
         return f"{self.hour.get():02d}:{self.minute.get():02d}"
 
+
 class TaskForm(ttk.LabelFrame):
     def __init__(self, master, submit_func):
         super().__init__(master, text="Task Creation")
@@ -47,8 +48,11 @@ class TaskForm(ttk.LabelFrame):
         self.calender = ttk.DateEntry(self)
         self.calender.pack(padx=5, side="left", fill="x", expand=True)
 
+        self.time_selector = TimeSelector(self)
+        self.time_selector.pack(side='left', fill="x")
+
         self.submit_btn = ttk.Button(self, text="Create", command=self.create_task)
-        self.submit_btn.pack(padx=5, side="left", fill="x", expand=True)
+        self.submit_btn.pack(padx=5, side="left", expand=True)
 
     def create_task(self):
         self.submit_func(
