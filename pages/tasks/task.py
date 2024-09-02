@@ -4,25 +4,31 @@ import ttkbootstrap as ttk
 class Task(ttk.LabelFrame):
     def __init__(self, master, task_id, task_name, task_tag, task_date, task_time, destroy_func, done_func):
         self.styles = {
-            "Red": {
+            "Goal": {
+                "TLabelframe": "primary",
+                "TLabel": "primary.TLabel",
+                "TButton": "primary.TButton",
+                "TCheckbutton": "primary.TCheckbutton"
+            },
+            "Urgent": {
                 "TLabelframe": "danger",
                 "TLabel": "danger.TLabel",
                 "TButton": "danger.TButton",
                 "TCheckbutton": "danger.TCheckbutton"
             },
-            "Orange": {
+            "Important": {
                 "TLabelframe": "warning",
                 "TLabel": "warning.TLabel",
                 "TButton": "warning.TButton",
                 "TCheckbutton": "warning.TCheckbutton"
             },
-            "Blue": {
+            "Medium": {
                 "TLabelframe": "info",
                 "TLabel": "info.TLabel",
                 "TButton": "info.TButton",
                 "TCheckbutton": "info.TCheckbutton"
             },
-            "Green": {
+            "Low": {
                 "TLabelframe": "success",
                 "TLabel": "success.TLabel",
                 "TButton": "success.TButton",

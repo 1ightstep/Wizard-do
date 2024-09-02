@@ -33,7 +33,7 @@ class TaskForm(ttk.LabelFrame):
         self.color_tag_mb["menu"] = self.color_tag_menu
 
         self.color_tag_var = tk.StringVar()
-        self.color_tags = ["Red", "Orange", "Blue", "Green"]
+        self.color_tags = ["Goal", "Urgent", "Important", "Medium", "Low"]
         for color_tag in self.color_tags:
             self.color_tag_menu.add_radiobutton(
                 label=color_tag,
@@ -59,16 +59,17 @@ class TaskForm(ttk.LabelFrame):
     def create_task(self):
         self.submit_func(
             self.task_name_input.get(),
-            self.color_tag_var.get() if self.color_tag_var.get() else "Blue",
+            self.color_tag_var.get() if self.color_tag_var.get() else "Goal",
             self.date_selector.entry.get(),
             self.time_selector.get_time()
         )
 
     def update_mb_style(self, color_tag):
         style_dict = {
-            "Red": "danger.TMenubutton",
-            "Orange": "warning.TMenubutton",
-            "Blue": "info.TMenubutton",
-            "Green": "success.TMenubutton"
+            "Goal": "primary.TMenubutton",
+            "Urgent": "danger.TMenubutton",
+            "Important": "warning.TMenubutton",
+            "Medium": "info.TMenubutton",
+            "Low": "success.TMenubutton"
         }
         self.color_tag_mb.configure(style=style_dict[color_tag])

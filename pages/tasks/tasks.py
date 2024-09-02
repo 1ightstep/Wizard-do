@@ -15,7 +15,7 @@ class Tasks(ttk.Frame):
         super().__init__(master)
         self.task_list = []
         self.title = ttk.Label(self, text="Tasks", font=("Helvetica", 20, "bold"))
-        self.title.pack(fill="x")
+        self.title.pack(fill="x", ipady=10)
         self.task_form = TaskForm(self, self.create_task)
         self.task_form.pack(fill="x", ipady=10, side="top")
         self.tasks_view_filter = TasksViewFilter(self)
@@ -53,6 +53,7 @@ class Tasks(ttk.Frame):
                 self.task_list.remove(task)
 
     def task_done(self, task_id):
+        print("YEAH")
         for task in self.task_list:
             if task["task_id"] == task_id:
                 task["task_status"] = "done"

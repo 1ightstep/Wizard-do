@@ -10,11 +10,7 @@ class Main(ttk.Window):
     def __init__(self):
         super().__init__()
         self.window_style = ttk.Style(theme="cosmo")
-        for theme in window_themes:
-            self.window_style.configure(
-           f"{theme}.TButton",
-                background=window_themes_color[theme],
-            )
+        self.update_window_theme(theme="cosmo")
         self.title("Wizard-do")
         self.geometry("1000x600")
         self.current_page = "dashboard"
@@ -26,6 +22,7 @@ class Main(ttk.Window):
         self.settings_page = settings.Settings(self, self.update_window_theme)
 
         self.mainloop()
+
     def page_display_logic(self, page):
         self.dashboard_page.forget()
         self.tasks_page.forget()
@@ -36,12 +33,16 @@ class Main(ttk.Window):
             self.tasks_page.pack(fill="both", expand=True, padx=5)
         elif page == "settings":
             self.settings_page.pack(fill="both", expand=True, padx=5)
+
     def update_window_theme(self, theme):
         self.window_style.theme_use(theme)
         for theme in window_themes:
             self.window_style.configure(
                 f"{theme}.TButton",
                 background=window_themes_color[theme],
+                font=("Helvetic", 12),
+                borderwidth=0,
+                corner_radius=15
             )
 
 if __name__ == "__main__":

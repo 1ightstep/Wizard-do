@@ -38,8 +38,7 @@ class Database:
         if not self.category_exists(category_name):
             raise Exception(f"{category_name} does not exist in the current database directory!")
         with open(f'{self.database_dir_path}/{category_name}.txt', 'a') as f:
-            f.write(str(data_object)+"\n")
-            f.close()
+            pass
 
 
 if __name__ == "__main__":
