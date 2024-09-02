@@ -10,16 +10,16 @@ class TimeSelector(ttk.Frame):
         self.hour = tk.StringVar(value="00")
         self.minute = tk.StringVar(value="00")
 
-        self.hour_spinbox = ttk.Spinbox(self, from_=0, to=23, wrap=True, textvariable=self.hour, width=2)
+        self.hour_spinbox = ttk.Spinbox(self, from_=0, to=23, textvariable=self.hour, width=2)
         self.colon_label = ttk.Label(self, text=":")
-        self.minute_spinbox = ttk.Spinbox(self, from_=0, to=59, wrap=True, textvariable=self.minute, width=2)
+        self.minute_spinbox = ttk.Spinbox(self, from_=0, to=59, textvariable=self.minute, width=2)
 
         self.hour_spinbox.pack(side=tk.LEFT)
         self.colon_label.pack(side=tk.LEFT)
         self.minute_spinbox.pack(side=tk.LEFT)
 
     def get_time(self):
-        return f"{self.hour.get():02d}:{self.minute.get():02d}"
+        return f"{int(self.hour.get()):02d}:{int(self.minute.get()):02d}"
 
 
 class TaskForm(ttk.LabelFrame):
@@ -45,7 +45,7 @@ class TaskForm(ttk.LabelFrame):
         self.task_name_input = placeholder_entry.PlaceholderEntry(self, placeholder="Task", style="primary.TEntry")
         self.task_name_input.pack(padx=5, side="left", fill="x", expand=True)
 
-        self.date_time_label_frame = ttk.LabelFrame(self, text="Dtae ")
+        self.date_time_label_frame = ttk.LabelFrame(self, text="Date and Time")
 
         self.date_selector = ttk.DateEntry(self)
         self.date_selector.pack(padx=5, side="left", fill="x", expand=True)

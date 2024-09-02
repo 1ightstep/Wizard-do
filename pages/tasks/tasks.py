@@ -14,12 +14,12 @@ class Tasks(ttk.Frame):
     def __init__(self, master):
         super().__init__(master)
         self.task_list = []
-        self.title = ttk.Label(self, text="Tasks", font=("Helvetica", 20, "bold"), foreground="black")
+        self.title = ttk.Label(self, text="Tasks", font=("Helvetica", 20, "bold"))
         self.title.pack(fill="x")
         self.task_form = TaskForm(self, self.create_task)
-        self.task_form.pack(fill="x", ipady=10)
+        self.task_form.pack(fill="x", ipady=10, side="top")
         self.tasks_view_filter = TasksViewFilter(self)
-        self.tasks_view_filter.pack(side="left", fill="both", expand=True)
+        self.tasks_view_filter.pack(side="left", ipady=10, ipadx=5, fill="both", expand=True)
         self.tasks_view = TasksView(self)
         self.tasks_view.pack(side="left", fill="both", expand=True)
 

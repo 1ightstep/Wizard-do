@@ -1,0 +1,41 @@
+window_themes = [
+    "cosmo",
+    "flatly",
+    "litera",
+    "minty",
+    "lumen",
+    "sandstone",
+    "yeti",
+    "pulse",
+    "united",
+    "morph",
+    "journal",
+    "darkly",
+    "superhero",
+    "solar",
+    "cyborg",
+    "vapor",
+    "simplex",
+    "cerculean"
+]
+
+window_themes_color = {
+    "cosmo": "#2780e3",
+    "flatly": "#2c3e50",
+    "litera": "#4582ec",
+    "minty": "#78c2ad",
+    "lumen": "#158cba",
+    "sandstone": "#325D88",
+    "yeti": "#008cba",
+    "pulse": "#593196",
+    "united": "#e95420",
+    "morph": "#378DFC",
+    "journal": "#eb6864",
+    "darkly": "#375a7f",
+    "superhero": "#4c9be8",
+    "solar": "#bc951a",
+    "cyborg": "#2a9fd6",
+    "vapor": "#6e40c0",
+    "simplex": "#d8220e",
+    "cerculean": "#4bb1ea"
+}
