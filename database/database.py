@@ -1,7 +1,8 @@
 import os
 
+
 class Database:
-    def __init__(self, database_dir_path: str):
+    def __init__(self, database_dir_path: str) -> None:
         self.database_dir_path = os.getcwd()+database_dir_path
         if not os.path.exists(self.database_dir_path):
             os.makedirs(self.database_dir_path)
@@ -17,34 +18,86 @@ class Database:
             return True
         return False
 
-    def search(self, category_name, key: str, value: str) -> None:
+    def category_error(self, category_name: str) -> None:
         if not self.category_exists(category_name):
             raise Exception(f"{category_name} does not exist in the current database directory!")
+
+    def key_exists(self, category_name: str, key: str) -> bool:
+        self.category_error(category_name)
+        with open(f'{self.database_dir_path}/{category_name}.txt', 'r') as f:
+            lines = list(eval(line.strip()) for line in f.readlines())
+            for line in lines:
+                if key in line.keys():
+                    return True
+        return False
+
+    def search(self, category_name: str, key: str, value: str) -> dict:
+        self.category_error(category_name)
         with open(f'{self.database_dir_path}/{category_name}.txt', 'r') as f:
             lines = list(eval(line.strip()) for line in f.readlines())
             for line in lines:
                 if line[key] == value:
                     return line
             f.close()
+        return {}
+
+    def search_all(self, category_name: str, key: str, value: str) -> list:
+        self.category_error(category_name)
+        results = []
+        with open(f'{self.database_dir_path}/{category_name}.txt', 'r') as f:
+            lines = list(eval(line.strip()) for line in f.readlines())
+            for line in lines:
+                if line[key] == value:
+                    results.append(line)
+            f.close()
+        return results
 
     def add_data(self, category_name: str, data_object: dict) -> None:
-        if not self.category_exists(category_name):
-            raise Exception(f"{category_name} does not exist in the current database directory!")
+        self.category_error(category_name)
         with open(f'{self.database_dir_path}/{category_name}.txt', 'a') as f:
             f.write(str(data_object)+"\n")
             f.close()
 
+    def replace_category(self, category_name: str, data_list: list) -> None:
+        self.category_error(category_name)
+        write_data_list = "\n".join([str(data) for data in data_list])
+        with open(f'{self.database_dir_path}/{category_name}.txt', 'w') as f:
+            f.write(write_data_list)
+            f.close()
+
+    def replace_data(self, category_name: str, key: str, value: list) -> None:
+        self.category_error(category_name)
+        with open(f'{self.database_dir_path}/{category_name}.txt', 'r') as f:
+            lines = list(eval(line.strip()) for line in f.readlines())
+            for line in lines:
+                if key in line.keys():
+                    line[key] = value
+            self.replace_category(category_name, lines)
+            f.close()
+
     def delete_data(self, category_name: str, key: str, value: str) -> None:
-        if not self.category_exists(category_name):
-            raise Exception(f"{category_name} does not exist in the current database directory!")
-        with open(f'{self.database_dir_path}/{category_name}.txt', 'a') as f:
-            pass
+        self.category_error(category_name)
+        with open(f'{self.database_dir_path}/{category_name}.txt', 'r') as f:
+            lines = list(eval(line.strip()) for line in f.readlines())
+            for line in lines:
+                if line[key] == value:
+                    lines.remove(line)
+            self.replace_data(category_name, lines)
+            f.close()
 
+    def return_value(self, category_name: str, key: str) -> str:
+        self.category_error(category_name)
+        with open(f'{self.database_dir_path}/{category_name}.txt', 'r') as f:
+            lines = list(eval(line.strip()) for line in f.readlines())
+            for line in lines:
+                if key in line.keys():
+                    return line[key]
+            f.close()
+        return ""
 
-if __name__ == "__main__":
-    test = Database("/database")
-    test.create_data_category("tasks")
-    test.add_data("tasks", {"task_name": "name", "task_tag": "blue"})
-    print(test.search("tasks", "task_name", "name"))
-
-
+    def return_all(self, category_name: str) -> list:
+        self.category_error(category_name)
+        with open(f'{self.database_dir_path}/{category_name}.txt', 'r') as f:
+            lines = list(eval(line.strip()) for line in f.readlines())
+            f.close()
+        return lines

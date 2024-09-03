@@ -1,8 +1,7 @@
 import customtkinter as ctk
 import ttkbootstrap as ttk
-class DashboardData:
-    def __init__(self):
-        pass
+
+
 class Dashboard(ttk.Frame):
     def __init__(self, master):
         super().__init__(master)

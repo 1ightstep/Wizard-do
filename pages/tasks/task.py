@@ -2,7 +2,7 @@ import ttkbootstrap as ttk
 
 
 class Task(ttk.LabelFrame):
-    def __init__(self, master, task_id, task_name, task_tag, task_date, task_time, destroy_func, done_func):
+    def __init__(self, master, task_id, task_tag, task_name, task_date, task_time, destroy_func, done_func):
         self.styles = {
             "Goal": {
                 "TLabelframe": "primary",
@@ -39,6 +39,7 @@ class Task(ttk.LabelFrame):
         super().__init__(master=master, text=f"{task_date}, {task_time}", bootstyle=self.styles[task_tag]["TLabelframe"], padding=5)
         self.done_btn = ttk.Checkbutton(self, style=self.styles[task_tag]["TCheckbutton"], command=lambda: done_func(task_id))
         self.done_btn.pack(side="left")
+
         self.task_name = ttk.Label(self, text=task_name, style=self.styles[task_tag]["TLabel"])
         self.task_name.pack(side="left")
 

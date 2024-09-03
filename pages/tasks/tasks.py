@@ -9,27 +9,44 @@ from pages.tasks.task import Task
 from pages.tasks.tasks_view import TasksView
 from pages.tasks.tasks_view_filter import TasksViewFilter
 
+from database.database import Database
+
 
 class Tasks(ttk.Frame):
     def __init__(self, master):
         super().__init__(master)
+        self.database = Database("/database/database")
         self.task_list = []
+
         self.title = ttk.Label(self, text="Tasks", font=("Helvetica", 20, "bold"))
         self.title.pack(fill="x", ipady=10)
+
         self.task_form = TaskForm(self, self.create_task)
         self.task_form.pack(fill="x", ipady=10, side="top")
+
         self.tasks_view_filter = TasksViewFilter(self)
         self.tasks_view_filter.pack(side="left", ipady=10, ipadx=5, fill="both", expand=True)
+
         self.tasks_view = TasksView(self)
         self.tasks_view.pack(side="left", fill="both", expand=True)
 
-    def create_task(self, task_name="", task_tag="Blue", task_date="", task_time=""):
+        for task in self.database.return_all("tasks"):
+            self.create_task(
+                task_tag=task["task_tag"],
+                task_name=task["task_name"],
+                task_date=task["task_date"],
+                task_time=task["task_time"],
+            )
+
+        master.protocol("WM_DELETE_WINDOW", self.save_task_list)
+
+    def create_task(self, task_tag, task_name="", task_date="", task_time=""):
         task_id = uuid.uuid4()
         task_widget = Task(
             master=self.tasks_view.tasks_container,
             task_id=task_id,
-            task_name=task_name,
             task_tag=task_tag,
+            task_name=task_name,
             task_date=task_date,
             task_time=task_time,
             destroy_func=self.destroy_task,
@@ -53,7 +70,13 @@ class Tasks(ttk.Frame):
                 self.task_list.remove(task)
 
     def task_done(self, task_id):
-        print("YEAH")
         for task in self.task_list:
             if task["task_id"] == task_id:
                 task["task_status"] = "done"
+
+    def save_task_list(self):
+        for i in range(len(self.task_list)):
+            self.task_list[i]["task_id"] = ""
+            self.task_list[i]["task_widget"] = ""
+        self.database.replace_category("tasks", self.task_list)
+        self.master.destroy()

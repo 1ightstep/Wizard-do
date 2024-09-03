@@ -10,9 +10,9 @@ class TimeSelector(ttk.Frame):
         self.hour = tk.StringVar(value="00")
         self.minute = tk.StringVar(value="00")
 
-        self.hour_spinbox = ttk.Spinbox(self, from_=0, to=23, textvariable=self.hour, width=2)
+        self.hour_spinbox = ttk.Spinbox(self, from_=0, to=23, wrap=True,  textvariable=self.hour, width=2)
         self.colon_label = ttk.Label(self, text=":")
-        self.minute_spinbox = ttk.Spinbox(self, from_=0, to=59, textvariable=self.minute, width=2)
+        self.minute_spinbox = ttk.Spinbox(self, from_=0, to=59, wrap=True,  textvariable=self.minute, width=2)
 
         self.hour_spinbox.pack(side=tk.LEFT)
         self.colon_label.pack(side=tk.LEFT)
@@ -58,8 +58,8 @@ class TaskForm(ttk.LabelFrame):
 
     def create_task(self):
         self.submit_func(
-            self.task_name_input.get(),
             self.color_tag_var.get() if self.color_tag_var.get() else "Goal",
+            self.task_name_input.get(),
             self.date_selector.entry.get(),
             self.time_selector.get_time()
         )
