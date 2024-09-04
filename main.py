@@ -20,13 +20,14 @@ class Main(ttk.Window):
         self.current_page = "dashboard"
         self.resizable(True, True)
 
-
         self.settings_setup()
 
         self.navbar = (navbar.Navbar(self, self.page_display_logic).pack(side="left", fill="y"))
         self.dashboard_page = dashboard.Dashboard(self)
         self.tasks_page = tasks.Tasks(self)
         self.settings_page = settings.Settings(self, self.update_window_theme)
+
+        self.dashboard_page.pack(fill="both", expand=True, padx=5)
 
         self.mainloop()
 
