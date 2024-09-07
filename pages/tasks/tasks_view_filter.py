@@ -1,6 +1,7 @@
 import ttkbootstrap as ttk
 from components.placeholder_entry import PlaceholderEntry
 
+
 class SearchBarFrame(ttk.Frame):
     def __init__(self, master):
         super().__init__(master)

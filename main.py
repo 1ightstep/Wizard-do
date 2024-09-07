@@ -19,6 +19,7 @@ class Main(ttk.Window):
         self.title("Wizard-do")
         self.geometry("1000x600")
         self.current_page = "dashboard"
+        self.resizable(True, True)
 
         self.settings_setup()
 
@@ -26,6 +27,8 @@ class Main(ttk.Window):
         self.dashboard_page = dashboard.Dashboard(self)
         self.tasks_page = tasks.Tasks(self)
         self.settings_page = settings.Settings(self, self.update_window_theme)
+
+        self.dashboard_page.pack(fill="both", expand=True, padx=5)
 
         self.mainloop()
 
