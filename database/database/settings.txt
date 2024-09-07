@@ -1,1 +1,1 @@
-{'window_theme': 'flatly'}
+{'window_theme': 'darkly'}

@@ -10,6 +10,7 @@ from pages.tasks import tasks
 from public.window_themes import window_themes
 from public.window_themes import window_themes_color
 
+
 class Main(ttk.Window):
     def __init__(self):
         super().__init__()
@@ -18,8 +19,6 @@ class Main(ttk.Window):
         self.title("Wizard-do")
         self.geometry("1000x600")
         self.current_page = "dashboard"
-        self.resizable(True, True)
-
 
         self.settings_setup()
 

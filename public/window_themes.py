@@ -39,3 +39,24 @@ window_themes_color = {
     "simplex": "#d8220e",
     "cerculean": "#4bb1ea"
 }
+
+window_themes_bg = {
+    "cosmo": "#ffffff",
+    "flatly": "#ffffff",
+    "litera": "#ffffff",
+    "minty": "#ffffff",
+    "lumen": "#ffffff",
+    "sandstone": "#ffffff",
+    "yeti": "#ffffff",
+    "pulse": "#ffffff",
+    "united": "#ffffff",
+    "morph": "#D9E3F1",
+    "journal": "#ffffff",
+    "darkly": "#222222",
+    "superhero": "#2b3e50",
+    "solar": "#002B36",
+    "cyborg": "#060606",
+    "vapor": "#190831",
+    "simplex": "#fcfcfc",
+    "cerculean": "#ffffff"
+}
