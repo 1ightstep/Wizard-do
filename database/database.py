@@ -46,16 +46,30 @@ class Database:
         results = []
         with open(f'{self.database_dir_path}/{category_name}.txt', 'r') as f:
             lines = list(eval(line.strip()) for line in f.readlines())
-            for line in lines:
-                if line[key] == value:
-                    results.append(line)
+            results = [
+                line
+                for line in lines
+                if line[key] == value
+            ]
+            f.close()
+        return results
+
+    def search_value(self, category_name: str, value: str) -> list:
+        self.category_error(category_name)
+        with open(f'{self.database_dir_path}/{category_name}.txt', 'r') as f:
+            lines = list(eval(line.strip()) for line in f.readlines())
+            results = [
+                line
+                for line in lines
+                if value in str(line.values())
+            ]
             f.close()
         return results
 
     def add_data(self, category_name: str, data_object: dict) -> None:
         self.category_error(category_name)
         with open(f'{self.database_dir_path}/{category_name}.txt', 'a') as f:
-            f.write(str(data_object)+"\n")
+            f.write(f"{str(data_object)}\n")
             f.close()
 
     def replace_category(self, category_name: str, data_list: list) -> None:
@@ -82,7 +96,7 @@ class Database:
             for line in lines:
                 if line[key] == value:
                     lines.remove(line)
-            self.replace_data(category_name, lines)
+            self.replace_category(category_name, lines)
             f.close()
 
     def return_value(self, category_name: str, key: str) -> str:

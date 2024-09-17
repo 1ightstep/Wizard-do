@@ -16,7 +16,8 @@ class Tasks(ttk.Frame):
     def __init__(self, master):
         super().__init__(master)
         self.database = Database("/database/database")
-        self.task_list = []
+        self.main_task_list = []
+        self.dynamic_task_list = []
 
         self.title = ttk.Label(self, text="Tasks", font=("Helvetica", 20, "bold"))
         self.title.pack(fill="x", ipady=10)
@@ -24,7 +25,7 @@ class Tasks(ttk.Frame):
         self.task_form = TaskForm(self, self.create_task)
         self.task_form.pack(fill="x", ipady=10, side="top")
 
-        self.tasks_view_filter = TasksViewFilter(self)
+        self.tasks_view_filter = TasksViewFilter(self, self.search_task)
         self.tasks_view_filter.pack(side="left", ipady=10, ipadx=5, fill="both", expand=True)
 
         self.tasks_view = TasksView(self)
@@ -38,7 +39,7 @@ class Tasks(ttk.Frame):
                 task_time=task["task_time"],
             )
 
-        master.protocol("WM_DELETE_WINDOW", self.save_task_list)
+        master.protocol("WM_DELETE_WINDOW", self.task_page_end_event)
 
     def create_task(self, task_tag, task_name="", task_date="", task_time=""):
         task_id = uuid.uuid4()
@@ -52,7 +53,7 @@ class Tasks(ttk.Frame):
             destroy_func=self.destroy_task,
             done_func=self.task_done
         )
-        self.task_list.append({
+        task_data_dict = {
             "task_id": task_id,
             "task_name": task_name,
             "task_tag": task_tag,
@@ -60,23 +61,33 @@ class Tasks(ttk.Frame):
             "task_time": task_time,
             "task_widget": task_widget,
             "task_status": "ongoing"
-        })
+        }
+        self.main_task_list.append(task_data_dict)
         self.tasks_view.add_task(task_widget)
 
     def destroy_task(self, task_id):
-        for task in self.task_list:
+        for task in self.main_task_list:
             if task["task_id"] == task_id:
                 task["task_widget"].destroy()
-                self.task_list.remove(task)
+                self.main_task_list.remove(task)
 
     def task_done(self, task_id):
-        for task in self.task_list:
+        for task in self.main_task_list:
             if task["task_id"] == task_id:
                 task["task_status"] = "done"
 
-    def save_task_list(self):
-        for i in range(len(self.task_list)):
-            self.task_list[i]["task_id"] = ""
-            self.task_list[i]["task_widget"] = ""
-        self.database.replace_category("tasks", self.task_list)
+    def search_task(self, val):
+        self.dynamic_task_list = [
+            task for task in self.main_task_list
+            if any(val.lower() in str(t_vals).lower() for t_vals in list(task.values()))
+        ]
+        self.tasks_view.remove_all(self.main_task_list)
+        self.tasks_view.add_all(self.dynamic_task_list)
+
+    def task_page_end_event(self):
+        temp = self.main_task_list
+        for i in range(len(temp)):
+            temp[i]["task_id"] = ""
+            temp[i]["task_widget"] = ""
+        self.database.replace_category("tasks", temp)
         self.master.destroy()
