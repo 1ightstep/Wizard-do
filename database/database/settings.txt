@@ -1,1 +1,1 @@
-{'window_theme': 'cerculean'}
+{'window_theme': 'cosmo'}
