@@ -1,4 +1,3 @@
-import customtkinter as ctk
 import ttkbootstrap as ttk
 
 

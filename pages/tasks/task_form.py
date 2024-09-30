@@ -19,7 +19,7 @@ class TimeSelector(ttk.Frame):
         self.minute_spinbox.pack(side=tk.LEFT)
 
     def get_time(self):
-        return f"{int(self.hour.get()):02d}:{int(self.minute.get()):02d}"
+        return f"{min(int(self.hour.get()), 23):02d}:{min(int(self.minute.get()), 59):02d}"
 
 
 class TaskForm(ttk.LabelFrame):

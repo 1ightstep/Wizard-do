@@ -64,8 +64,7 @@ class Main(ttk.Window):
                     {"window_theme": "cosmo"},
                 ]
             )
-        else:
-            self.update_window_theme(self.database.return_value("settings", "window_theme"))
+        self.update_window_theme(self.database.return_value("settings", "window_theme"))
 
 
 if __name__ == "__main__":

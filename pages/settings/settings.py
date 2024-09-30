@@ -1,9 +1,8 @@
 import ttkbootstrap as ttk
-from public.window_themes import window_themes as themes
-from public.window_themes import window_themes_color as themes_dict
 from math import *
-import customtkinter as ctk
-import tkinter as tk
+
+from public.window_themes import window_themes as themes
+
 
 
 class Settings(ttk.Frame):
