@@ -1,6 +1,9 @@
+import time
+
 import ttkbootstrap as ttk
 import uuid
 import datetime
+import threading
 
 from pages.tasks.task_form import TaskForm
 from pages.tasks.task import Task
@@ -15,6 +18,7 @@ class Tasks(ttk.Frame):
     def __init__(self, master):
         super().__init__(master)
         self.database = Database("/database/database")
+        self.ai = AI()
         self.tasks_done = 0
         self.main_task_list = []
         self.dynamic_task_list = []
@@ -31,7 +35,8 @@ class Tasks(ttk.Frame):
             "by_tag": self.filter_by_tag,
             "show_reverse": self.show_reverse,
             "remove_done": self.remove_done,
-            "clear_filters": self.clear_filters
+            "clear_filters": self.clear_filters,
+            "ai_filter": self.ai_filter
         }
         self.tasks_view_filter = TasksViewFilter(self, filter_func_dict)
         self.tasks_view_filter.pack(side="left", ipady=10, ipadx=5, fill="both", expand=True)
@@ -50,6 +55,15 @@ class Tasks(ttk.Frame):
         master.protocol("WM_DELETE_WINDOW", self.task_page_end_event)
 
     def create_task(self, task_tag, task_name="", task_date="", task_time="", initial_load=False):
+        month, day, year = task_date.split("/")
+        if len(year) != 4:
+            year = "20" + year
+        try:
+            datetime.datetime.strptime(f"{task_date} {task_time}", '%m/%d/%Y %H:%M')
+        except ValueError as e:
+            print(e)
+            task_date = f"{time.localtime().tm_mon}/{time.localtime().tm_day}/{time.localtime().tm_year}"
+
         task_id = uuid.uuid4()
         task_widget = Task(
             master=self.tasks_view.tasks_container,
@@ -74,6 +88,7 @@ class Tasks(ttk.Frame):
         if initial_load:
             self.dynamic_task_list.append(task_data_dict)
         self.tasks_view.add_task(task_widget)
+        return task_data_dict
 
     def destroy_task(self, task_id):
         for task in self.main_task_list:
@@ -135,10 +150,49 @@ class Tasks(ttk.Frame):
         self.tasks_view.clear_view()
         self.tasks_view.add_all(self.main_task_list)
 
+    def ai_filter(self, prompt):
+        self.tasks_view_filter.ai_filter_frame.message_box.input.config(state="disabled")
+        self.tasks_view_filter.ai_filter_frame.message_box.submit_btn.config(state="disabled")
+        self.task_form.submit_btn.config(state="disabled")
+        self.tasks_view_filter.ai_filter_frame.log_box.add_log("Please wait... Generations can take up to 5 minutes.", "primary")
+
+        def thread_work():
+            response = self.ai.filter_list(prompt, self.dynamic_task_list)
+            if response["status"] == "success":
+                self.dynamic_task_list = []
+                for r_task in response["list"]:
+                    if not r_task["to_create"]:
+                        find_task = next((
+                            m_task
+                            for m_task in self.main_task_list
+                            if r_task["task_name"] == m_task["task_name"] and r_task["task_date"] == m_task["task_date"] and r_task["task_time"] == m_task["task_time"]
+                        ), None)
+                        if find_task:
+                            self.dynamic_task_list.append(find_task)
+                    else:
+                        new_task = self.create_task(r_task["task_tag"], r_task["task_name"], r_task["task_date"], r_task["task_time"])
+                        self.dynamic_task_list.append(new_task)
+                self.tasks_view.clear_view()
+                self.tasks_view.add_all(self.dynamic_task_list)
+                self.tasks_view_filter.ai_filter_frame.log_box.add_log("Success", "success")
+            else:
+                self.tasks_view_filter.ai_filter_frame.log_box.add_log("An error has occurred.", "danger")
+            self.tasks_view_filter.ai_filter_frame.message_box.input.config(state="active")
+            self.tasks_view_filter.ai_filter_frame.message_box.submit_btn.config(state="active")
+            self.task_form.submit_btn.config(state="active")
+        try:
+            threading.Thread(target=thread_work).start()
+        except Exception as e:
+            print(e)
+            self.tasks_view_filter.ai_filter_frame.log_box.add_log("An error has occurred.", "danger")
+            self.tasks_view_filter.ai_filter_frame.message_box.input.config(state="active")
+            self.tasks_view_filter.ai_filter_frame.message_box.submit_btn.config(state="active")
+            self.task_form.submit_btn.config(state="active")
+
     def task_page_end_event(self):
-        temp = self.main_task_list
-        for i in range(len(temp)):
-            temp[i]["task_id"] = ""
-            temp[i]["task_widget"] = ""
-        self.database.replace_category("tasks", temp)
+        self.dynamic_task_list = self.main_task_list
+        for task in self.dynamic_task_list:
+            task["task_id"] = ""
+            task["task_widget"] = ""
+        self.database.replace_category("tasks", self.dynamic_task_list)
         self.master.destroy()

@@ -1,1 +1,1 @@
-{'window_theme': 'darkly'}
+{'window_theme': 'superhero'}

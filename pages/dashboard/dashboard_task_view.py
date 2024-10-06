@@ -37,7 +37,6 @@ class DashboardTasksView(ttk.LabelFrame):
             padding = 14 + (0.09*lines)
         else:
             padding = 10.2
-        print(lines)
 
         tasks_date = ttk.Label(self.frame2, text=tasks_date, font=("helvetica", 12))
         tasks_date.pack(padx=10, pady=(0, padding*lines))

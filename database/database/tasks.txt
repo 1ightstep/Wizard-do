@@ -1,0 +1,10 @@
+{'task_id': '', 'task_name': 'Study for Calculus Final Exam', 'task_tag': 'Goal', 'task_date': '10/9/2024', 'task_time': '8:00', 'task_widget': '', 'task_status': 'ongoing'}
+{'task_id': '', 'task_name': 'Practice Golf Swing at Driving Range', 'task_tag': 'Goal', 'task_date': '10/10/2024', 'task_time': '6:00', 'task_widget': '', 'task_status': 'ongoing'}
+{'task_id': '', 'task_name': 'Research New Boxing Techniques', 'task_tag': 'Goal', 'task_date': '10/11/2024', 'task_time': '7:00', 'task_widget': '', 'task_status': 'ongoing'}
+{'task_id': '', 'task_name': 'Sparring Session with Coach', 'task_tag': 'Goal', 'task_date': '10/12/2024', 'task_time': '4:00', 'task_widget': '', 'task_status': 'ongoing'}
+{'task_id': '', 'task_name': 'Review Notes from Psychology Class', 'task_tag': 'Goal', 'task_date': '10/13/2024', 'task_time': '10:00', 'task_widget': '', 'task_status': 'ongoing'}
+{'task_id': '', 'task_name': 'Work on Physics Project', 'task_tag': 'Goal', 'task_date': '10/14/2024', 'task_time': '9:00', 'task_widget': '', 'task_status': 'ongoing'}
+{'task_id': '', 'task_name': 'Attend Group Study Session', 'task_tag': 'Goal', 'task_date': '10/15/2024', 'task_time': '2:00', 'task_widget': '', 'task_status': 'ongoing'}
+{'task_id': '', 'task_name': 'Prepare for Debate Tournament', 'task_tag': 'Goal', 'task_date': '10/16/2024', 'task_time': '1:00', 'task_widget': '', 'task_status': 'ongoing'}
+{'task_id': '', 'task_name': 'Shadowboxing Training', 'task_tag': 'Goal', 'task_date': '10/17/2024', 'task_time': '5:00', 'task_widget': '', 'task_status': 'ongoing'}
+{'task_id': '', 'task_name': 'Write Reflection Paper for History Class', 'task_tag': 'Goal', 'task_date': '10/18/2024', 'task_time': '11:00', 'task_widget': '', 'task_status': 'ongoing'}

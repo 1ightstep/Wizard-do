@@ -79,7 +79,7 @@ class Database:
             f.write(write_data_list)
             f.close()
 
-    def replace_data(self, category_name: str, key: str, value: list) -> None:
+    def replace_data(self, category_name: str, key: str, value: str) -> None:
         self.category_error(category_name)
         with open(f'{self.database_dir_path}/{category_name}.txt', 'r') as f:
             lines = list(eval(line.strip()) for line in f.readlines())
