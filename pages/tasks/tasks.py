@@ -17,7 +17,7 @@ from utils.ai import AI
 class Tasks(ttk.Frame):
     def __init__(self, master):
         super().__init__(master)
-        self.database = Database("/database/database")
+        self.database = Database("/database/databases")
         self.ai = AI()
         self.tasks_done = 0
         self.main_task_list = []

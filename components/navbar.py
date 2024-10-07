@@ -1,3 +1,4 @@
+import customtkinter as ctk
 import ttkbootstrap as ttk
 import tkinter as tk
 class Navbar(ttk.Frame):
@@ -27,5 +28,12 @@ class Navbar(ttk.Frame):
             command=lambda: page_display_function("settings"),
         )
         self.link_settings_page.pack(fill="x", ipadx=30)
-
+        self.link_accounts_page = tk.Button(
+            self,
+            anchor="w",
+            font=("Helvetica", 15),
+            text="Accounts",
+            command=lambda: page_display_function("accounts"),
+        )
+        self.link_accounts_page.pack(fill="x", ipadx=30, pady=15, side="bottom")
 

@@ -6,7 +6,7 @@ import time
 class AI:
     def __init__(self):
         self.url = "https://api.arliai.com/v1/chat/completions"
-        self.ARLIAI_API_KEY = ""
+        self.ARLIAI_API_KEY = "ea0a919f-6b07-477c-a99d-f7b935dd3657"
         self.headers = {
             'Content-Type': 'application/json',
             'Authorization': f"Bearer {self.ARLIAI_API_KEY}"
