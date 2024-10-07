@@ -9,7 +9,7 @@ class AccountIn(ctk.CTk):
         super().__init__()
         self.title("Sign In")
         self.database = Database("/database/databases")
-        self.geometry("500x350")
+        self.geometry("500x400")
         self.resizable(False, False)
         self.iconbitmap("public/images/acc.ico")
         self.header = ctk.CTkLabel(self,

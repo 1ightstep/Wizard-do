@@ -9,7 +9,7 @@ class AccountEdit(ctk.CTk):
         super().__init__()
         self.database = Database("/database/databases")
         self.title("Password Manager")
-        self.geometry("500x350")
+        self.geometry("500x400")
         self.resizable(False, False)
         self.header = ctk.CTkLabel(self,
                                    text="Change Password",
@@ -20,7 +20,11 @@ class AccountEdit(ctk.CTk):
         self.frame.pack(fill="both", expand=True)
         self.entry1 = ctk.CTkEntry(self.frame, placeholder_text="Original password", corner_radius=5, width=250, 
                                    height=50)
+        self.entry1.configure(show="•")
         self.entry1.pack(pady=(40, 5), padx=10, side="top", anchor="n")
+        self.checkbox1 = ctk.CTkCheckBox(self.frame, width=25, height=25, text="Show Password", corner_radius=0,
+                                         command=lambda: self.show(1))
+        self.checkbox1.pack(pady=5, padx=125, side="top", anchor=ctk.W)
         self.entry2 = ctk.CTkEntry(self.frame, placeholder_text="New password", corner_radius=5, width=250, 
                                    height=50)
         self.entry2.configure(show="•")
@@ -29,29 +33,39 @@ class AccountEdit(ctk.CTk):
                                    height=50)
         self.entry3.configure(show="•")
         self.entry3.pack(pady=5, padx=10, side="top")
-        self.checkbox = ctk.CTkCheckBox(self.frame, width=25, height=25, text="Show Password", corner_radius=0,
-                                        command=self.show)
-        self.checkbox.pack(pady=5, padx=125, side="top", anchor=ctk.W)
+        self.checkbox2 = ctk.CTkCheckBox(self.frame, width=25, height=25, text="Show Password", corner_radius=0,
+                                         command=lambda: self.show(2))
+        self.checkbox2.pack(pady=5, padx=125, side="top", anchor=ctk.W)
         self.submit = ctk.CTkButton(self.frame, text="Enter", corner_radius=0,
-                                    command=lambda: self.edit(self.entry1.get(), self.entry2.get()))
-        self.entry1.bind("<Return>", lambda e: self.login(self.entry2.get()))
-        self.entry2.bind("<Return>", lambda e: self.login(self.entry2.get()))
-        self.entry3.bind("<Return>", lambda e: self.login(self.entry2.get()))
+                                    command=lambda: self.edit(self.entry1.get(), self.entry2.get(), self.entry3.get()))
+        self.entry1.bind("<Return>", lambda e: self.edit(self.entry1.get(), self.entry2.get(), self.entry3.get()))
+        self.entry2.bind("<Return>", lambda e: self.edit(self.entry1.get(), self.entry2.get(), self.entry3.get()))
+        self.entry3.bind("<Return>", lambda e: self.edit(self.entry1.get(), self.entry2.get(), self.entry3.get()))
         self.submit.pack(pady=(0, 25), padx=10, side="right", anchor="se")
         self.protocol("WM_DELETE_WINDOW", lambda: self.withdraw())
         self.mainloop()
-        
-    def edit():
-        return
 
-    def show(self):
-        if self.checkbox.get() == 1:
-            self.entry2.configure(show="")
+    def show(self, value):
+        if value == 2:
+            if self.checkbox2.get() == 1:
+                self.entry2.configure(show="")
+                self.entry3.configure(show="")
+            else:
+                self.entry2.configure(show="•")
+                self.entry3.configure(show="•")
         else:
-            self.entry2.configure(show="•")
+            if self.checkbox1.get() == 1:
+                self.entry1.configure(show="")
+            else:
+                self.entry1.configure(show="•")
     
-    def edit(self, password):
+    def edit(self, old_password, new_password, new_password_2):
         accounts = self.database.return_all("accounts")
+        print(self.database.return_value(
+            self.database.return_value("settings", "signed_in")
+            , "password"))
+        if old_password != self.database.return_value(self.database.return_value("settings", "signed_in")):
+            pass
         if self.entry2.get() != self.entry3.get():
             messagebox.showwarning("Password does not match!", "Passwords do not match, please try again")
             return
