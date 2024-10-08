@@ -1,1 +1,1 @@
-{'username': 'rizzman64', 'password': 'alphasigma'}
+{'username': 'rizzman64', 'password': ''}

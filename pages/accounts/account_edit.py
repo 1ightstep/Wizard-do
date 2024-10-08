@@ -60,13 +60,21 @@ class AccountEdit(ctk.CTk):
                 self.entry1.configure(show="•")
     
     def edit(self, old_password, new_password, new_password_2):
-        accounts = self.database.return_all("accounts")
-        print(self.database.return_value(
-            self.database.return_value("settings", "signed_in")
-            , "password"))
-        if old_password != self.database.return_value(self.database.return_value("settings", "signed_in")):
-            pass
-        if self.entry2.get() != self.entry3.get():
-            messagebox.showwarning("Password does not match!", "Passwords do not match, please try again")
+        current_password = self.database.search("accounts", "username", f'{self.database.return_value("settings", "signed_in")}')["password"]
+        # make sure the old password isn't the new password
+        if old_password != current_password:
+            messagebox.showerror("Incorrect password!", "The old password doesn't match, try again")
             return
-        
+        # make sure confirm box matches new password
+        elif new_password != new_password_2:
+            messagebox.showwarning("Password does not match!", "Password and confirm password do not match, please try again")
+            return
+        # if user "changes" the password, but it's the same as before
+        elif old_password == new_password:
+            messagebox.showinfo("Nothing changed", "You set the password the same as before, nothing changed!")
+        # when it ACTUALLY changes the password
+        else:
+            # fix this so it doesn't change all passwords, instead just one password
+            self.database.replace_data("accounts", "password", f'{new_password}')
+            messagebox.showinfo("Success!", "Your password has been successfully changed!")
+            self.withdraw()

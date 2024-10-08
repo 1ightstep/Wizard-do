@@ -99,7 +99,7 @@ class Database:
             self.replace_category(category_name, lines)
             f.close()
 
-    def return_value(self, category_name: any, key: str) -> str:
+    def return_value(self, category_name: str, key: str) -> str:
         self.category_error(category_name)
         with open(f'{self.database_dir_path}/{category_name}.txt', 'r') as f:
             lines = list(eval(line.strip()) for line in f.readlines())
