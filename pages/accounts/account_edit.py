@@ -60,9 +60,9 @@ class AccountEdit(ctk.CTk):
                 self.entry1.configure(show="•")
     
     def edit(self, old_password, new_password, new_password_2):
-        current_password = self.database.search("accounts", "username", f'{self.database.return_value("settings", "signed_in")}')["password"]
+        current_account = self.database.search("accounts", "username", f'{self.database.return_value("settings", "signed_in")}')
         # make sure the old password isn't the new password
-        if old_password != current_password:
+        if old_password != current_account["password"]:
             messagebox.showerror("Incorrect password!", "The old password doesn't match, try again")
             return
         # make sure confirm box matches new password
@@ -75,6 +75,10 @@ class AccountEdit(ctk.CTk):
         # when it ACTUALLY changes the password
         else:
             # fix this so it doesn't change all passwords, instead just one password
-            self.database.replace_data("accounts", "password", f'{new_password}')
+            new_account = {
+                'username': self.database.return_value("settings", "signed_in"),
+                'password': new_password
+            }
+            self.database.replace_specific("accounts", 'current_account', 'new_account')
             messagebox.showinfo("Success!", "Your password has been successfully changed!")
-            self.withdraw()
+            self.protocol("WM_DELETE_WINDOW", self.withdraw())
