@@ -1,7 +1,7 @@
 import ttkbootstrap as ttk
 from ttkbootstrap.scrolled import ScrolledFrame
 from database.database import Database
-from pages.settings.settings_account import AccountMenu
+from pages.settings import settings_account, settings_themes
 from public.window_themes import window_themes as themes
 from math import *
 
@@ -22,8 +22,10 @@ class Settings(ttk.Frame):
         self.theme_option_frame.grid_rowconfigure(tuple(range(self.theme_frame_rows)), weight=1, minsize=100)
         self.theme_option_frame.grid_columnconfigure(tuple(range(self.theme_frame_cols)), weight=1, minsize=100)
 
-        self.account_dir = AccountMenu(self.container)
+        self.account_dir = settings_account.AccountMenu(self.container)
         self.account_dir.pack(padx=5, pady=5, fill="both", expand=True, side="top")
+        self.account_image = settings_themes.AccountImage(self.container)
+        self.account_image.pack(padx=5, pady=5, fill="both", expand=True, side="top")
 
         for index, theme in enumerate(themes):
             col = index % self.theme_frame_cols

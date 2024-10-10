@@ -36,9 +36,9 @@ class AccountCreate(ctk.CTk):
         self.submit = ctk.CTkButton(self.frame, text="Enter", corner_radius=0,
                                     command=lambda: self.sign_up(self.entry1.get(), self.entry2.get()))
         self.submit.pack(pady=(0, 25), padx=10, side="right", anchor="se")
-        self.entry1.bind("<Return>", lambda e: self.login(self.entry1.get(), self.entry2.get()))
-        self.entry2.bind("<Return>", lambda e: self.login(self.entry1.get(), self.entry2.get()))
-        self.entry3.bind("<Return>", lambda e: self.login(self.entry1.get(), self.entry2.get()))
+        self.entry1.bind("<Return>", lambda e: self.sign_up(self.entry1.get(), self.entry2.get()))
+        self.entry2.bind("<Return>", lambda e: self.sign_up(self.entry1.get(), self.entry2.get()))
+        self.entry3.bind("<Return>", lambda e: self.sign_up(self.entry1.get(), self.entry2.get()))
         self.protocol("WM_DELETE_WINDOW", lambda: self.withdraw())
         self.mainloop()
 
@@ -58,7 +58,7 @@ class AccountCreate(ctk.CTk):
         if accounts == []:
             messagebox.showinfo("Sign Up Successful", "Your account has been successfully created!")
             self.account_make.update_ui(self, username, password)
-            self.database.add_data("accounts", {'username': username, 'password': password})
+            self.database.add_data("accounts", {'username': username, 'password': password, 'icon': 17})
             self.database.create_data_category(username)
             self.withdraw()
             return
@@ -69,7 +69,7 @@ class AccountCreate(ctk.CTk):
                 return
             messagebox.showinfo("Sign Up Successful", "Your account has been successfully created!")
             self.account_make.update_ui(self, username, password)
-            self.database.add_data("accounts", {'username': username, 'password': password})
+            self.database.add_data("accounts", {'username': username, 'password': password, 'icon': 17})
             self.database.create_data_category(username)
             self.withdraw()
             return

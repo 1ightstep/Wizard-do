@@ -49,6 +49,9 @@ class AccountMenu(ttk.LabelFrame):
             messagebox.showerror("Unknown error", "An unknown error occurred, can't sign in right now.")
 
     def sign_out(self):
-        if messagebox.askyesno("Confirm Sign Out", "Are you sure you want to sign out?"):
-            self.database.replace_data("settings", "signed_in", "")
-            # call update_ui to change to guest acc
+        if self.database.return_value("settings", "signed_in"):
+            if messagebox.askyesno("Confirm Sign Out", "Are you sure you want to sign out?"):
+                self.database.replace_data("settings", "signed_in", "")
+                # call update_ui to change to guest acc
+        else:
+            messagebox.showwarning("Can't sign out", "You are on a guest account, can't sign out now!")
