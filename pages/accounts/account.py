@@ -2,9 +2,7 @@ import ttkbootstrap as ttk
 from PIL import Image, ImageTk
 from database.database import Database
 from public.images.resources import img_to_number
-from pages.accounts import account_in, account_edit, account_create
-from tkinter import messagebox
-from random import randint
+from public.images.resources.img_to_number import pictures
 
 
 class Accounts(ttk.Frame):
@@ -21,12 +19,11 @@ class Accounts(ttk.Frame):
         try:
             password = self.database.search("accounts", "username", username)["password"]
         except KeyError:
-            username = "Guest"
             password = ""
-        if username == "Guest":
-            picture = self.pictures[14]
+        if not username:
+            picture = self.pictures[17]
         else:
-            picture = self.pictures[randint(1, 25)]
+            picture = self.pictures[self.database.return_value("accounts", f"{self.database.return_value("accounts", "icon")}")]
         self.guest = ImageTk.PhotoImage(Image.open(picture))
         self.profile_picture_frame = ttk.Label(self.profile_frame,
                                                image=self.guest,

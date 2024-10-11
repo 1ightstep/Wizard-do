@@ -45,14 +45,24 @@ class Tasks(ttk.Frame):
         self.tasks_view.pack(side="left", fill="both", expand=True)
         
         # FIX on startup loading the wrong tasks
-        for task in self.database.return_all("guest"):
-            self.create_task(
-                task_tag=task["task_tag"],
-                task_name=task["task_name"],
-                task_date=task["task_date"],
-                task_time=task["task_time"],
-                initial_load=True
-            )
+        if self.database.return_value("settings", "signed_in"):
+            for task in self.database.return_all(self.database.return_value("settings", "signed_in")):
+                self.create_task(
+                    task_tag=task["task_tag"],
+                    task_name=task["task_name"],
+                    task_date=task["task_date"],
+                    task_time=task["task_time"],
+                    initial_load=True
+                )
+        else:
+            for task in self.database.return_all("tasks"):
+                self.create_task(
+                    task_tag=task["task_tag"],
+                    task_name=task["task_name"],
+                    task_date=task["task_date"],
+                    task_time=task["task_time"],
+                    initial_load=True
+                )
         master.protocol("WM_DELETE_WINDOW", self.task_page_end_event)
 
     def create_task(self, task_tag, task_name="", task_date="", task_time="", initial_load=False):
@@ -196,7 +206,7 @@ class Tasks(ttk.Frame):
             task["task_id"] = ""
             task["task_widget"] = ""
         if self.database.return_value("settings", "signed_in") == "":
-            self.database.replace_category("guest", self.dynamic_task_list)
+            self.database.replace_category("tasks", self.dynamic_task_list)
         else:
             self.database.replace_category(f"{self.database.return_value("settings", "signed_in")}", self.dynamic_task_list)
         self.master.destroy()

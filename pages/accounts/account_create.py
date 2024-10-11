@@ -1,9 +1,8 @@
-import ttkbootstrap as ttk
 import customtkinter as ctk
 from tkinter import messagebox
-from components import placeholder_entry
 from database.database import Database
 from pages.accounts import account
+from pages.accounts.account import Accounts
 
 
 class AccountCreate(ctk.CTk):
@@ -57,7 +56,7 @@ class AccountCreate(ctk.CTk):
             return
         if not accounts:
             messagebox.showinfo("Sign Up Successful", "Your account has been successfully created!")
-            self.account_make.update_ui(self, username, password)
+            Accounts.update_ui(self.master, username, password)
             self.database.add_data("accounts", {'username': username, 'password': password, 'icon': 17})
             self.database.create_data_category(username)
             self.withdraw()
@@ -65,13 +64,13 @@ class AccountCreate(ctk.CTk):
         if not username or not password:
             messagebox.showwarning("Empty Box!", "You forgot to fill in one of the boxes, try again")
             return
-        for account in accounts:
-            if account["username"] == username:
+        for instance in accounts:
+            if instance["username"] == username:
                 messagebox.showerror("Username Taken!",
                                      "Username is already taken by someone else, please use a different one.")
                 return
             messagebox.showinfo("Sign Up Successful", "Your account has been successfully created!")
-            self.account_make.update_ui(account.Accounts, username, password)
+            Accounts.update_ui(self.master, username, password)
             self.database.add_data("accounts", {'username': username, 'password': password, 'icon': 17})
             self.database.create_data_category(username)
             self.withdraw()

@@ -2,6 +2,8 @@ import ttkbootstrap as ttk
 from tkinter import messagebox
 from pages.accounts import account_in, account_edit, account_create, account
 from database.database import Database
+from pages.accounts.account import Accounts
+from public.images.resources.img_to_number import pictures
 
 
 class AccountMenu(ttk.LabelFrame):
@@ -45,13 +47,14 @@ class AccountMenu(ttk.LabelFrame):
                 account_in.AccountIn()
             else:
                 messagebox.showerror("No accounts available", "There are currently no accounts available!")
+
         except Exception as e:
             messagebox.showerror("Unknown error", "An unknown error occurred, can't sign in right now.")
 
     def sign_out_cmd(self):
         if messagebox.askyesno("Confirm Sign Out", "Are you sure you want to sign out?"):
             self.database.replace_data("settings", "signed_in", "")
-            self.account_page.update_ui("Guest", "")
+            Accounts.update_ui(self, "Guest", "")
 
     def sign_out(self):
         if self.database.return_value("settings", "signed_in"):

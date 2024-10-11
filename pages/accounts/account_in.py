@@ -45,8 +45,8 @@ class AccountIn(ctk.CTk):
         if username == "" or password == "":
             messagebox.showerror("Text Box is Empty!", "At least one of the entry boxes is empty, please try again!")
             return
-        for account in accounts:
-            if account["username"] == username and account["password"] == password:
+        for instance in accounts:
+            if instance["username"] == username and instance["password"] == password:
                 self.log_check(True, username, password)
                 return
         self.log_check(False, None, None)

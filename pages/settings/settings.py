@@ -25,6 +25,10 @@ class Settings(ttk.Frame):
         self.account_dir = settings_account.AccountMenu(self.container)
         self.account_dir.pack(padx=5, pady=5, fill="both", expand=True, side="top")
 
+        self.account_img = settings_profile_pictures.AccountImage(self.container)
+        if self.database.return_value("settings", "signed_in"):
+            self.account_img.pack(padx=5, pady=5, fill="both", expand=True, side="top")
+
         for index, theme in enumerate(themes):
             col = index % self.theme_frame_cols
             row = floor(index / self.theme_frame_cols)
