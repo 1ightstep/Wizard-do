@@ -11,7 +11,6 @@ class Accounts(ttk.Frame):
     def __init__(self, master):
         super().__init__(master)
         self.database = Database("/database/databases")
-        global profile_username, profile_password, username
         self.title = ttk.Label(self, text="Account", font=("Helvetica", 20, "bold"))
         self.title.pack(fill="x", ipady=10)
         self.profile_frame = ttk.LabelFrame(self, text="Profile", padding=5)
@@ -33,18 +32,19 @@ class Accounts(ttk.Frame):
                                                image=self.guest,
                                                padding=15)
         self.profile_picture_frame.grid(row=0, column=0, rowspan=2)
-        profile_username = ttk.Label(self.profile_frame,
-                                     font=("Helvetica", 10),
-                                     text="Username:\n" + username,
-                                     padding=10)
-        profile_username.grid(row=0, column=1)
+        self.profile_username = ttk.Label(self.profile_frame,
+                                          font=("Helvetica", 10),
+                                          text="Username:\n" + username,
+                                          padding=10)
+        self.profile_username.grid(row=0, column=1)
         self.pw_edited = "•" * len(password)
-        profile_password = ttk.Label(self.profile_frame,
-                                     font=("Helvetica", 10),
-                                     text="Password:\n" + self.pw_edited,
-                                     padding=10)
-        profile_password.grid(row=0, column=2)
+        self.profile_password = ttk.Label(self.profile_frame,
+                                          font=("Helvetica", 10),
+                                          text="Password:\n" + self.pw_edited,
+                                          padding=10)
+        self.profile_password.grid(row=0, column=2)
 
     def update_ui(self, username, password):
-        profile_username.config(text="Username:\n" + username)
-        profile_password.config(text="Password:\n" + len(password) * "•")
+        if self.profile_username and self.profile_password:
+            self.profile_username.configure(text="Username:\n" + username)
+            self.profile_password.configure(text="Password:\n" + len(password) * "•")

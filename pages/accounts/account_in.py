@@ -16,7 +16,7 @@ class AccountIn(ctk.CTk):
                                    text="Sign In",
                                    font=("Helvetica", 20, "bold"))
         self.header.pack(fill="x", pady=(10, 0))
-        self.account_set = account.Accounts
+        self.account_set = account.Accounts(self)
         self.frame = ctk.CTkFrame(self)
         self.frame.pack(fill="both", expand=True)
         self.entry1 = ctk.CTkEntry(self.frame, placeholder_text="Username", corner_radius=5, width=250, height=50)
@@ -54,7 +54,7 @@ class AccountIn(ctk.CTk):
     def log_check(self, value, username, password):
         if value:
             messagebox.showinfo("Login Successful", "Welcome!")
-            self.account_set.update_ui(self, username, password)
+            self.account_set.update_ui(username, password)
             self.database.replace_data("settings", "signed_in", username)
             self.protocol("WM_DELETE_WINDOW", self.withdraw())
         else:

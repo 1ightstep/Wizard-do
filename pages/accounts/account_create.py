@@ -53,7 +53,7 @@ class AccountCreate(ctk.CTk):
     def sign_up(self, username, password):
         accounts = self.database.return_all("accounts")
         if self.entry2.get() != self.entry3.get():
-            messagebox.showwarning("Password does not match!", "Passwords do not match, please try again")
+            messagebox.showwarning("Passwords do not match!", "Passwords do not match, please try again")
             return
         if not accounts:
             messagebox.showinfo("Sign Up Successful", "Your account has been successfully created!")
@@ -62,13 +62,16 @@ class AccountCreate(ctk.CTk):
             self.database.create_data_category(username)
             self.withdraw()
             return
+        if not username or not password:
+            messagebox.showwarning("Empty Box!", "You forgot to fill in one of the boxes, try again")
+            return
         for account in accounts:
             if account["username"] == username:
                 messagebox.showerror("Username Taken!",
                                      "Username is already taken by someone else, please use a different one.")
                 return
             messagebox.showinfo("Sign Up Successful", "Your account has been successfully created!")
-            self.account_make.update_ui(self, username, password)
+            self.account_make.update_ui(account.Accounts, username, password)
             self.database.add_data("accounts", {'username': username, 'password': password, 'icon': 17})
             self.database.create_data_category(username)
             self.withdraw()

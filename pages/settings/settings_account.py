@@ -11,18 +11,18 @@ class AccountMenu(ttk.LabelFrame):
         self.sign_up = ttk.Button(self,
                                   text="Sign Up",
                                   padding=5,
-                                  width=15,
+                                  width=45,
                                   command=account_create.AccountCreate)
         self.sign_in = ttk.Button(self,
                                   text="Sign In",
                                   padding=5,
-                                  width=15,
+                                  width=45,
                                   command=self.account_in)
 
         self.acc_change = ttk.Button(self,
                                      text="Change Password",
                                      padding=5,
-                                     width=20,
+                                     width=45,
                                      command=self.account_edit)
         self.sign_out = ttk.Button(self,
                                    text="Sign Out",
@@ -47,6 +47,11 @@ class AccountMenu(ttk.LabelFrame):
                 messagebox.showerror("No accounts available", "There are currently no accounts available!")
         except Exception as e:
             messagebox.showerror("Unknown error", "An unknown error occurred, can't sign in right now.")
+
+    def sign_out_cmd(self):
+        if messagebox.askyesno("Confirm Sign Out", "Are you sure you want to sign out?"):
+            self.database.replace_data("settings", "signed_in", "")
+            self.account_page.update_ui("Guest", "")
 
     def sign_out(self):
         if self.database.return_value("settings", "signed_in"):

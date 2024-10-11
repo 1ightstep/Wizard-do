@@ -43,8 +43,9 @@ class Tasks(ttk.Frame):
 
         self.tasks_view = TasksView(self)
         self.tasks_view.pack(side="left", fill="both", expand=True)
-
-        for task in self.database.return_all("tasks"):
+        
+        # FIX on startup loading the wrong tasks
+        for task in self.database.return_all("guest"):
             self.create_task(
                 task_tag=task["task_tag"],
                 task_name=task["task_name"],
@@ -194,5 +195,8 @@ class Tasks(ttk.Frame):
         for task in self.dynamic_task_list:
             task["task_id"] = ""
             task["task_widget"] = ""
-        self.database.replace_category("tasks", self.dynamic_task_list)
+        if self.database.return_value("settings", "signed_in") == "":
+            self.database.replace_category("guest", self.dynamic_task_list)
+        else:
+            self.database.replace_category(f"{self.database.return_value("settings", "signed_in")}", self.dynamic_task_list)
         self.master.destroy()

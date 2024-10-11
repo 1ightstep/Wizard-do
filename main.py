@@ -4,7 +4,7 @@ from database.database import Database
 from components import navbar
 
 from pages.accounts import account
-from pages.settings import settings, settings_account, settings_themes
+from pages.settings import settings, settings_account, settings_profile_pictures
 from pages.dashboard import dashboard
 from pages.tasks import tasks
 
@@ -27,7 +27,7 @@ class Main(ttk.Window):
         self.accounts_page = account.Accounts(self)
         self.dashboard_page = dashboard.Dashboard(self)
         self.tasks_page = tasks.Tasks(self)
-        self.settings_page = settings.Settings(self, self.update_window_theme)
+        self.settings_page = settings.Settings(self, self.update_window_theme, self.accounts_page)
 
         self.dashboard_page.pack(fill="both", expand=True)
 
