@@ -5,13 +5,14 @@ from PIL import Image, ImageTk
 from public.images.resources import img_to_number
 
 
-class AccountImage(ttk.Frame):
+class AccountImage(ttk.LabelFrame):
     def __init__(self, master):
-        super().__init__(master)
+        super().__init__(master=master, text="Profile Picture")
         self.database = Database("/database/databases")
+
         self.pictures = img_to_number.pictures
         self.account_make = account.Accounts
-        self.ico = ImageTk.PhotoImage(Image.open("images/balanced.png").resize((200, 200)))
+        self.ico = ImageTk.PhotoImage(Image.open("public/images/balanced.png").resize((200, 200)))
         self.display = ttk.Label(self, image=self.ico)
         self.display.image = self.ico
         self.display.pack(padx=50, pady=50, side="left")
@@ -37,4 +38,11 @@ class AccountImage(ttk.Frame):
         hlr = ImageTk.PhotoImage(Image.open(icon).resize((200, 200)))
         self.display.config(image=hlr)
         self.display.image = hlr
-        self.account_make.update_icon(account, icon)
+        # make this shorter
+        self.database.replace_specific("accounts",
+                                       {'username': f'{self.database.return_value("settings", "signed_in")}',
+                                        'password': f'{self.database.return_value(self.database.return_value("settings", "signed_in"), "password")}',
+                                        'icon': f'{self.database.return_value(self.database.return_value("settings", "signed_in"), "icon")}'
+                                        },
+                                       {})
+        #self.account_make.update_icon(account, icon)

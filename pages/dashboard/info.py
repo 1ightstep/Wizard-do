@@ -1,21 +1,42 @@
 import ttkbootstrap as ttk
+from database.database import Database
+from PIL import Image, ImageTk
+from public.images.resources import img_to_number
+
 
 class Info(ttk.Frame):
     def __init__(self, master):
         super().__init__(master)
-
+        self.database = Database("/database/databases")
         self.frame_names = iter(["TotalLeftFrame", "CompletedTodayFrame", "DifficultyFrame", "AverageFrame"])
-        self.holder = iter(["TLF", "CTF", "DF", "AF"])
+        self.holder = iter(["TLF", "CTF", "AC", "AF"])
 
         self.labels = {}
 
         for x in range(4):
             self.create_frames(next(self.frame_names), next(self.holder))
 
+        self.create_labels("Account", "Account", "", self.AC)
         self.create_labels("Total Left", "Total Tasks", "50      ", self.TLF)
         self.create_labels("Completed Today", "Completed Today", "50          ", self.CTF)
-        self.create_labels("Difficulty", "Difficulty", "Medium", self.DF)
         self.create_labels("Average", "Average Time", "50 minutes", self.AF)
+
+        self.create_labels("Account", "Account", f"{self.database.return_value("settings", "signed_in")}", self.AC)
+        username = self.database.return_value("settings", "signed_in")
+        try:
+            password = self.database.search("accounts", "username", username)["password"]
+        except KeyError:
+            username = "Guest"
+            password = ""
+        if username == "Guest":
+            self.picture = img_to_number.pictures[17]
+        else:
+            self.picture = img_to_number.pictures[self.database.return_value("accounts", "icon")]
+        self.icon = ImageTk.PhotoImage(Image.open(self.picture))
+        self.profile_picture_frame = ttk.Label(self.AC,
+                                               image=self.icon,
+                                               padding=15)
+        self.profile_picture_frame.pack(padx=(0, 8), side=ttk.LEFT, fill=ttk.BOTH, expand=True)
 
     def create_frames(self, name1, name2):
         frame = ttk.LabelFrame(self, width=200, height=100)

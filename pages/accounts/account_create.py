@@ -58,7 +58,7 @@ class AccountCreate(ctk.CTk):
         if not accounts:
             messagebox.showinfo("Sign Up Successful", "Your account has been successfully created!")
             self.account_make.update_ui(self, username, password)
-            self.database.add_data("accounts", {'username': username, 'password': password})
+            self.database.add_data("accounts", {'username': username, 'password': password, 'icon': 17})
             self.database.create_data_category(username)
             self.withdraw()
             return
@@ -69,7 +69,7 @@ class AccountCreate(ctk.CTk):
                 return
             messagebox.showinfo("Sign Up Successful", "Your account has been successfully created!")
             self.account_make.update_ui(self, username, password)
-            self.database.add_data("accounts", {'username': username, 'password': password})
+            self.database.add_data("accounts", {'username': username, 'password': password, 'icon': 17})
             self.database.create_data_category(username)
             self.withdraw()
             return

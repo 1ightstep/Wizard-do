@@ -89,16 +89,6 @@ class Database:
             self.replace_category(category_name, lines)
             f.close()
 
-    def replace_specific(self, category_name: str, formal_dict: dict, new_dict: dict) -> None:
-        self.category_error(category_name)
-        with open(f'{self.database_dir_path}/{category_name}.txt', 'r') as f:
-            lines = list(eval(line.strip()) for line in f.readlines())
-            for index, line in enumerate(lines):
-                if line == formal_dict:
-                    lines[index] == new_dict
-            self.replace_category(category_name, lines)
-            f.close()
-
     def delete_data(self, category_name: str, key: str, value: str) -> None:
         self.category_error(category_name)
         with open(f'{self.database_dir_path}/{category_name}.txt', 'r') as f:
