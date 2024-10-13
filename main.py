@@ -4,7 +4,7 @@ from database.database import Database
 from components import navbar
 
 from pages.accounts import account
-from pages.settings import settings, settings_account, settings_profile_pictures
+from pages.settings import settings
 from pages.dashboard import dashboard
 from pages.tasks import tasks
 
@@ -21,17 +21,24 @@ class Main(ttk.Window):
         self.geometry("1000x600")
         self.current_page = "dashboard"
         self.resizable(True, True)
+        self.username = self.database.return_value("settings", "signed_in")
+        if not self.username:
+            self.username = "Guest"
+
         self.settings_setup()
 
         self.navbar = (navbar.Navbar(self, self.page_display_logic).pack(side="left", fill="y"))
         self.accounts_page = account.Accounts(self)
-        self.dashboard_page = dashboard.Dashboard(self)
         self.tasks_page = tasks.Tasks(self)
+        self.dashboard_page = dashboard.Dashboard(
+            self,
+            self.username,
+            self.tasks_page.main_task_list
+        )
         self.settings_page = settings.Settings(self, self.update_window_theme, self.accounts_page)
 
-        self.dashboard_page.pack(fill="both", expand=True)
+        self.dashboard_page.pack(fill="both", expand=True, padx=5)
 
-        self.protocol("WM_DELETE_WINDOW", lambda: exit())
         self.mainloop()
 
     def page_display_logic(self, page):
@@ -40,14 +47,14 @@ class Main(ttk.Window):
         self.settings_page.forget()
         self.accounts_page.forget()
         if page == "dashboard":
-            self.dashboard_page.pack(fill="both", expand=True)
+            self.dashboard_page.pack(fill="both", expand=True, padx=5)
+            self.dashboard_page.refresh_ui()
         elif page == "tasks":
-            self.tasks_page.pack(fill="both", expand=True)
-            tasks.Tasks(self)
+            self.tasks_page.pack(fill="both", expand=True, padx=5)
         elif page == "settings":
-            self.settings_page.pack(fill="both", expand=True)
+            self.settings_page.pack(fill="both", expand=True, padx=5)
         elif page == "accounts":
-            self.accounts_page.pack(fill="both", expand=True)
+            self.accounts_page.pack(fill="both", expand=True, padx=5)
 
     def update_window_theme(self, theme):
         self.window_style.theme_use(theme)

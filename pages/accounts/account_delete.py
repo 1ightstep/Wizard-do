@@ -1,13 +1,11 @@
-import ttkbootstrap as ttk
 import customtkinter as ctk
 from tkinter import messagebox
-from components import placeholder_entry
 from database.database import Database
 from pages.accounts import account
 
 
-class AccountCreate(ctk.CTk):
-    def __init__(self):
+class AccountDelete(ctk.CTk):
+    def __init__(self, account_page):
         super().__init__()
         self.title("Delete Account")
         self.database = Database("/database/databases")
@@ -32,10 +30,10 @@ class AccountCreate(ctk.CTk):
                                         command=self.show)
         self.checkbox.pack(pady=5, padx=125, side="top", anchor=ctk.W)
         self.submit = ctk.CTkButton(self.frame, text="Enter", corner_radius=0,
-                                    command=lambda: self.delete(self.entry1.get(), self.entry2.get()))
+                                    command=lambda: self.delete(self.entry1.get(), self.entry2.get(), account_page))
         self.submit.pack(pady=(0, 25), padx=10, side="right", anchor="se")
-        self.entry1.bind("<Return>", lambda e: self.delete(self.entry1.get(), self.entry2.get()))
-        self.entry2.bind("<Return>", lambda e: self.delete(self.entry1.get(), self.entry2.get()))
+        self.entry1.bind("<Return>", lambda e: self.delete(self.entry1.get(), self.entry2.get(), account_page))
+        self.entry2.bind("<Return>", lambda e: self.delete(self.entry1.get(), self.entry2.get(), account_page))
         self.protocol("WM_DELETE_WINDOW", lambda: self.withdraw())
         self.mainloop()
 
@@ -47,14 +45,14 @@ class AccountCreate(ctk.CTk):
             self.entry1.configure(show="•")
             self.entry2.configure(show="•")
 
-    def delete(self, password, confirm_password):
+    def delete(self, password, confirm_password, account_page):
         account_del = self.database.return_value("settings", "signed_in")
         if self.entry1.get() != self.entry2.get():
             messagebox.showwarning("Passwords do not match!", "Passwords do not match, please try again")
             return
         if not account_del:
             messagebox.showinfo("Account Deletion Successful", "Your account has been successfully deleted!")
-            self.account_make.update_ui(self, "Guest", "")
+            account_page.update_ui("Guest")
             self.database.delete_data("accounts", "username", f"{self.database.return_value("settings", "signed_in")}")
             self.database.create_data_category(password)
             self.withdraw()

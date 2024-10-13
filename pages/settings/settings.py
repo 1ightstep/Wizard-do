@@ -1,7 +1,8 @@
 import ttkbootstrap as ttk
 from ttkbootstrap.scrolled import ScrolledFrame
 from database.database import Database
-from pages.settings import settings_account, settings_profile_pictures
+from pages.settings import settings_account
+from pages.accounts import account_image
 from public.window_themes import window_themes as themes
 from math import *
 
@@ -22,10 +23,11 @@ class Settings(ttk.Frame):
         self.theme_option_frame.grid_rowconfigure(tuple(range(self.theme_frame_rows)), weight=1, minsize=100)
         self.theme_option_frame.grid_columnconfigure(tuple(range(self.theme_frame_cols)), weight=1, minsize=100)
 
-        self.account_dir = settings_account.AccountMenu(self.container)
+        # account_page will be passed through anything that changes the account (sign in, out, delete account, etc.)
+        self.account_dir = settings_account.AccountMenu(self.container, account_page)
         self.account_dir.pack(padx=5, pady=5, fill="both", expand=True, side="top")
 
-        self.account_img = settings_profile_pictures.AccountImage(self.container)
+        self.account_img = account_image.AccountImage(self.container, account_page)
         if self.database.return_value("settings", "signed_in"):
             self.account_img.pack(padx=5, pady=5, fill="both", expand=True, side="top")
 

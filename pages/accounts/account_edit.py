@@ -5,7 +5,7 @@ from pages.accounts import account
 
 
 class AccountEdit(ctk.CTk):
-    def __init__(self):
+    def __init__(self, account_page):
         super().__init__()
         self.database = Database("/database/databases")
         self.title("Password Manager")

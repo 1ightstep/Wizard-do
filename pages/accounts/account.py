@@ -16,14 +16,10 @@ class Accounts(ttk.Frame):
         self.pictures = img_to_number.pictures
 
         username = self.database.return_value("settings", "signed_in")
-        try:
-            password = self.database.search("accounts", "username", username)["password"]
-        except KeyError:
-            password = ""
-        if not username:
+        if username == "Guest":
             picture = self.pictures[17]
         else:
-            picture = self.pictures[self.database.return_value("accounts", f"{self.database.return_value("accounts", "icon")}")]
+            picture = self.pictures[self.database.return_value("accounts", "icon")]
         self.guest = ImageTk.PhotoImage(Image.open(picture))
         self.profile_picture_frame = ttk.Label(self.profile_frame,
                                                image=self.guest,
@@ -34,14 +30,16 @@ class Accounts(ttk.Frame):
                                           text="Username:\n" + username,
                                           padding=10)
         self.profile_username.grid(row=0, column=1)
-        self.pw_edited = "•" * len(password)
-        self.profile_password = ttk.Label(self.profile_frame,
-                                          font=("Helvetica", 10),
-                                          text="Password:\n" + self.pw_edited,
-                                          padding=10)
-        self.profile_password.grid(row=0, column=2)
 
-    def update_ui(self, username, password):
-        if self.profile_username and self.profile_password:
+    def update_ui(self, username):
+        if self.profile_username:
             self.profile_username.configure(text="Username:\n" + username)
-            self.profile_password.configure(text="Password:\n" + len(password) * "•")
+            if username == "Guest":
+                self.database.replace_data("settings", "signed_in", "")
+            else:
+                self.database.replace_data("settings", "signed_in", username)
+
+    def update_icon(self, icon):
+        self.profile_picture_frame.configure(
+            image=icon
+        )
