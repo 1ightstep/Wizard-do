@@ -51,4 +51,4 @@ class AccountImage(ttk.LabelFrame):
                                         'icon': icon}
                                        ,)
         page.update_icon(hlrhlr = ImageTk.PhotoImage(Image.open(icon)))
-        
+
