@@ -1,8 +1,6 @@
 import customtkinter as ctk
 from tkinter import messagebox
 from database.database import Database
-from pages.accounts import account
-from pages.accounts.account import Accounts
 
 
 class AccountCreate(ctk.CTk):
@@ -32,7 +30,7 @@ class AccountCreate(ctk.CTk):
                                         command=self.show)
         self.checkbox.pack(pady=5, padx=125, side="top", anchor=ctk.W)
         self.submit = ctk.CTkButton(self.frame, text="Enter", corner_radius=0,
-                                    command=lambda: self.sign_up(self.entry1.get(), self.entry2.get()))
+                                    command=lambda: self.sign_up(self.entry1.get(), self.entry2.get(), account_page))
         self.submit.pack(pady=(0, 25), padx=10, side="right", anchor="se")
         self.entry1.bind("<Return>", lambda e: self.sign_up(self.entry1.get(), self.entry2.get(), account_page))
         self.entry2.bind("<Return>", lambda e: self.sign_up(self.entry1.get(), self.entry2.get(), account_page))

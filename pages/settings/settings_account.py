@@ -15,22 +15,19 @@ class AccountMenu(ttk.LabelFrame):
         self.sign_up = ttk.Button(self,
                                   text="Sign Up",
                                   padding=5,
-                                  width=45,
                                   command=lambda: account_create.AccountCreate(account_page))
         self.sign_in = ttk.Button(self,
                                   text="Sign In",
                                   padding=5,
-                                  width=45,
                                   command=lambda: self.account_in(account_page))
-
         self.acc_change = ttk.Button(self,
                                      text="Change Password",
                                      padding=5,
-                                     width=45,
                                      command=lambda: self.account_edit(account_page))
         self.sign_out = ttk.Button(self,
                                    text="Sign Out",
                                    padding=5,
+                                   width=45,
                                    command=lambda: self.sign_out_cmd(account_page))
         self.sign_out.pack(padx=5, pady=5, fill="both", expand=True, side="bottom")
         self.sign_up.pack(padx=5, pady=5, fill="both", expand=True, side="left")

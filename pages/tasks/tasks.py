@@ -43,7 +43,7 @@ class Tasks(ttk.Frame):
 
         self.tasks_view = TasksView(self)
         self.tasks_view.pack(side="left", fill="both", expand=True)
-        
+
         # FIX on startup loading the wrong tasks
         if self.database.return_value("settings", "signed_in"):
             for task in self.database.return_all(self.database.return_value("settings", "signed_in")):

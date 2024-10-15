@@ -12,9 +12,14 @@ class AccountImage(ttk.LabelFrame):
 
         self.pictures = img_to_number.pictures
         self.account_make = account.Accounts
-        self.ico = ImageTk.PhotoImage(
-            Image.open(self.pictures[self.database.return_value("accounts", "icon")]).resize(
-                (200, 200)))
+        if not self.database.return_value("settings", "signed_in"):
+            self.ico = ImageTk.PhotoImage(
+                Image.open(self.pictures[17]).resize(
+                    (200, 200)))
+        else:
+            self.ico = ImageTk.PhotoImage(
+                Image.open(self.pictures[self.database.return_value("accounts", "icon")]).resize(
+                    (200, 200)))
         self.display = ttk.Label(self, image=self.ico)
         self.display.image = self.ico
         self.display.pack(padx=50, pady=50, side="left")
@@ -50,5 +55,5 @@ class AccountImage(ttk.LabelFrame):
                                         'password': f'{self.database.return_value(self.database.return_value("settings", "signed_in"), "password")}',
                                         'icon': icon}
                                        ,)
-        page.update_icon(hlrhlr = ImageTk.PhotoImage(Image.open(icon)))
+        page.update_icon(ImageTk.PhotoImage(Image.open(icon)))
 

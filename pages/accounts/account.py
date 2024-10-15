@@ -16,8 +16,9 @@ class Accounts(ttk.Frame):
         self.pictures = img_to_number.pictures
 
         username = self.database.return_value("settings", "signed_in")
-        if username == "Guest":
+        if not username:
             picture = self.pictures[17]
+            username = "Guest"
         else:
             picture = self.pictures[self.database.return_value("accounts", "icon")]
         self.guest = ImageTk.PhotoImage(Image.open(picture))
