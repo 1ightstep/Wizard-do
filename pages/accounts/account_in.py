@@ -4,7 +4,7 @@ from database.database import Database
 
 
 class AccountIn(ctk.CTk):
-    def __init__(self, account_page):
+    def __init__(self, account_page, dashboard_page):
         super().__init__()
         self.title("Sign In")
         self.database = Database("/database/databases")
@@ -26,9 +26,9 @@ class AccountIn(ctk.CTk):
                                         command=self.show)
         self.checkbox.pack(pady=5, padx=125, side="top", anchor=ctk.W)
         self.submit = ctk.CTkButton(self.frame, text="Enter", corner_radius=0, command=lambda: self.login(
-            self.entry1.get(), self.entry2.get(), account_page))
-        self.entry1.bind("<Return>", lambda e: self.login(self.entry1.get(), self.entry2.get(), account_page))
-        self.entry2.bind("<Return>", lambda e: self.login(self.entry1.get(), self.entry2.get(), account_page))
+            self.entry1.get(), self.entry2.get(), account_page, dashboard_page))
+        self.entry1.bind("<Return>", lambda e: self.login(self.entry1.get(), self.entry2.get(), account_page, dashboard_page))
+        self.entry2.bind("<Return>", lambda e: self.login(self.entry1.get(), self.entry2.get(), account_page, dashboard_page))
         self.submit.pack(pady=(0, 25), padx=10, side="right", anchor="se")
         self.protocol("WM_DELETE_WINDOW", lambda: self.withdraw())
         self.mainloop()
@@ -39,21 +39,23 @@ class AccountIn(ctk.CTk):
         else:
             self.entry2.configure(show="•")
 
-    def login(self, username, password, account_page):
+    def login(self, username, password, account_page, dashboard_page):
+        # return ALL accounts, sift thru each one for matching account
         accounts = self.database.return_all("accounts")
         if username == "" or password == "":
             messagebox.showerror("Text Box is Empty!", "At least one of the entry boxes is empty, please try again!")
             return
         for instance in accounts:
             if instance["username"] == username and instance["password"] == password:
-                self.log_check(True, username, password, account_page)
+                self.log_check(True, username, account_page, dashboard_page)
                 return
         self.log_check(False, None, None, None)
 
-    def log_check(self, value, username, password, account_page):
+    def log_check(self, value, username, account_page, dashboard_page):
         if value:
             messagebox.showinfo("Login Successful", "Welcome!")
             account_page.update_ui(username)
+            dashboard_page.refresh_name(username)
             self.protocol("WM_DELETE_WINDOW", self.withdraw())
         else:
             messagebox.showerror("Login Failed", "Invalid username or password.")

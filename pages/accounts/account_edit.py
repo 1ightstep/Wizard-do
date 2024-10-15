@@ -1,7 +1,6 @@
 import customtkinter as ctk
 from tkinter import messagebox
 from database.database import Database
-from pages.accounts import account
 
 
 class AccountEdit(ctk.CTk):
@@ -15,7 +14,6 @@ class AccountEdit(ctk.CTk):
                                    text="Change Password",
                                    font=("Helvetica", 20, "bold"))
         self.header.pack(fill="x", pady=(10, 0))
-        self.account_set = account.Accounts
         self.frame = ctk.CTkFrame(self)
         self.frame.pack(fill="both", expand=True)
         self.entry1 = ctk.CTkEntry(self.frame, placeholder_text="Original password", corner_radius=5, width=250, 

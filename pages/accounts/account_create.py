@@ -4,7 +4,7 @@ from database.database import Database
 
 
 class AccountCreate(ctk.CTk):
-    def __init__(self, account_page):
+    def __init__(self, account_page, dashboard_page):
         super().__init__()
         self.title("Create Account")
         self.database = Database("/database/databases")
@@ -30,11 +30,11 @@ class AccountCreate(ctk.CTk):
                                         command=self.show)
         self.checkbox.pack(pady=5, padx=125, side="top", anchor=ctk.W)
         self.submit = ctk.CTkButton(self.frame, text="Enter", corner_radius=0,
-                                    command=lambda: self.sign_up(self.entry1.get(), self.entry2.get(), account_page))
+                                    command=lambda: self.sign_up(self.entry1.get(), self.entry2.get(), account_page, dashboard_page))
         self.submit.pack(pady=(0, 25), padx=10, side="right", anchor="se")
-        self.entry1.bind("<Return>", lambda e: self.sign_up(self.entry1.get(), self.entry2.get(), account_page))
-        self.entry2.bind("<Return>", lambda e: self.sign_up(self.entry1.get(), self.entry2.get(), account_page))
-        self.entry3.bind("<Return>", lambda e: self.sign_up(self.entry1.get(), self.entry2.get(), account_page))
+        self.entry1.bind("<Return>", lambda e: self.sign_up(self.entry1.get(), self.entry2.get(), account_page, dashboard_page))
+        self.entry2.bind("<Return>", lambda e: self.sign_up(self.entry1.get(), self.entry2.get(), account_page, dashboard_page))
+        self.entry3.bind("<Return>", lambda e: self.sign_up(self.entry1.get(), self.entry2.get(), account_page, dashboard_page))
         self.protocol("WM_DELETE_WINDOW", lambda: self.withdraw())
         self.mainloop()
 
@@ -46,7 +46,7 @@ class AccountCreate(ctk.CTk):
             self.entry2.configure(show="•")
             self.entry3.configure(show="•")
 
-    def sign_up(self, username, password, account_page):
+    def sign_up(self, username, password, account_page, dashboard_page):
         accounts = self.database.return_all("accounts")
         if self.entry2.get() != self.entry3.get():
             messagebox.showwarning("Passwords do not match!", "Passwords do not match, please try again")
@@ -54,6 +54,7 @@ class AccountCreate(ctk.CTk):
         if not accounts:
             messagebox.showinfo("Sign Up Successful", "Your account has been successfully created!")
             account_page.update_ui(username)
+            dashboard_page.refresh_name(username)
             self.database.add_data("accounts", {'username': username, 'password': password, 'icon': 17})
             self.database.create_data_category(username)
             self.withdraw()
@@ -68,6 +69,7 @@ class AccountCreate(ctk.CTk):
                 return
             messagebox.showinfo("Sign Up Successful", "Your account has been successfully created!")
             account_page.update_ui(username)
+            dashboard_page.refresh_name(username)
             self.database.add_data("accounts", {'username': username, 'password': password, 'icon': 17})
             self.database.create_data_category(username)
             self.withdraw()

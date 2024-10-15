@@ -2,11 +2,10 @@ import ttkbootstrap as ttk
 from tkinter import messagebox
 from pages.accounts import account_in, account_edit, account_create, account
 from database.database import Database
-from pages.accounts.account import Accounts
 
 
 class AccountMenu(ttk.LabelFrame):
-    def __init__(self, master, account_page):
+    def __init__(self, master, account_page, dashboard_page):
         super().__init__(master=master, text="Profile")
         self.database = Database("/database/databases")
 
@@ -15,11 +14,11 @@ class AccountMenu(ttk.LabelFrame):
         self.sign_up = ttk.Button(self,
                                   text="Sign Up",
                                   padding=5,
-                                  command=lambda: account_create.AccountCreate(account_page))
+                                  command=lambda: account_create.AccountCreate(account_page, dashboard_page))
         self.sign_in = ttk.Button(self,
                                   text="Sign In",
                                   padding=5,
-                                  command=lambda: self.account_in(account_page))
+                                  command=lambda: self.account_in(account_page, dashboard_page))
         self.acc_change = ttk.Button(self,
                                      text="Change Password",
                                      padding=5,
@@ -28,7 +27,7 @@ class AccountMenu(ttk.LabelFrame):
                                    text="Sign Out",
                                    padding=5,
                                    width=45,
-                                   command=lambda: self.sign_out_cmd(account_page))
+                                   command=lambda: self.sign_out_cmd(account_page, dashboard_page))
         self.sign_out.pack(padx=5, pady=5, fill="both", expand=True, side="bottom")
         self.sign_up.pack(padx=5, pady=5, fill="both", expand=True, side="left")
         self.sign_in.pack(padx=5, pady=5, fill="both", expand=True, side="left")
@@ -40,10 +39,10 @@ class AccountMenu(ttk.LabelFrame):
         else:
             account_edit.AccountEdit(account_page)
 
-    def account_in(self, account_page):
+    def account_in(self, account_page, dashboard_page):
         try:
             if self.database.return_all("accounts"):
-                account_in.AccountIn(account_page)
+                account_in.AccountIn(account_page, dashboard_page)
             else:
                 messagebox.showerror("No accounts available", "There are currently no accounts available!")
         except Exception as e:
@@ -51,10 +50,11 @@ class AccountMenu(ttk.LabelFrame):
             print(e)
 
     # function named sign_out_cmd to not mix up with button sign_out
-    def sign_out_cmd(self, account_page):
+    def sign_out_cmd(self, account_page, dashboard_page):
         if self.database.return_value("settings", "signed_in"):
             if messagebox.askyesno("Confirm Sign Out", "Are you sure you want to sign out?"):
                 self.database.replace_data("settings", "signed_in", "")
                 account_page.update_ui("Guest")
+                dashboard_page.refresh_name("Guest")
         else:
             messagebox.showwarning("Can't sign out", "You are on a guest account, can't sign out now!")

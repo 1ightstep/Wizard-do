@@ -4,7 +4,8 @@ import time
 
 import ttkbootstrap as ttk
 from ttkbootstrap.scrolled import ScrolledFrame
-
+from PIL import Image
+Image.CUBIC = Image.BICUBIC
 
 class QuoteWidget(ttk.LabelFrame):
     def __init__(self, master, title, content):
@@ -134,3 +135,6 @@ class Dashboard(ttk.Frame):
     def refresh_ui(self):
         self.info_frame.refresh_ui()
         self.tasks_frame.refresh_ui()
+
+    def refresh_name(self, username):
+        self.title.config(text=f"Hello, {username}")

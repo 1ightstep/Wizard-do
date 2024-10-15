@@ -16,7 +16,6 @@ class AccountDelete(ctk.CTk):
                                    text="Delete Account",
                                    font=("Helvetica", 20, "bold"))
         self.header.pack(fill="x", pady=(10, 0))
-        self.account_make = account.Accounts
         self.frame = ctk.CTkFrame(self)
         self.frame.pack(fill="both", expand=True)
         self.entry1 = ctk.CTkEntry(self.frame, placeholder_text="Password", corner_radius=5, width=250, height=50)
