@@ -32,7 +32,7 @@ class Navbar(ttk.Frame):
             self,
             anchor="w",
             font=("Helvetica", 15),
-            text="Accounts",
+            text="Account",
             command=lambda: page_display_function("accounts"),
         )
         self.link_accounts_page.pack(fill="x", ipadx=30, pady=15, side="bottom")

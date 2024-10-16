@@ -2,7 +2,7 @@ import ttkbootstrap as ttk
 from PIL import Image, ImageTk
 from database.database import Database
 from public.images.resources import img_to_number
-from public.images.resources.img_to_number import pictures
+from pages.accounts import account_image
 
 
 class Accounts(ttk.Frame):
@@ -11,26 +11,42 @@ class Accounts(ttk.Frame):
         self.database = Database("/database/databases")
         self.title = ttk.Label(self, text="Account", font=("Helvetica", 20, "bold"))
         self.title.pack(fill="x", ipady=10)
-        self.profile_frame = ttk.LabelFrame(self, text="Profile", padding=5)
-        self.profile_frame.pack(padx=5, pady=5, fill="both", expand=True, side="top")
+        self.container = ttk.LabelFrame(self, text="Accounts")
+        self.container.pack(padx=5, pady=5, fill="both", expand=True)
+        self.profile_frame = ttk.Frame(self.container, padding=5)
+        self.profile_frame.pack(padx=5, pady=5, fill="both", expand=True, side="left")
         self.pictures = img_to_number.pictures
 
+        self.icon_frame = ttk.Frame(self.container)
+        self.icon_frame.pack(padx=5, pady=5, fill="both", expand=True, side="left")
+
+        self.acc_img = account_image.AccountImage(self.icon_frame, self)
+        if self.database.return_value("settings", "signed_in"):
+            self.acc_img.pack(pady=20, fill="both", expand=True)
+        master.protocol("WM_DELETE_WINDOW", self.account_page_end_event)
+
         username = self.database.return_value("settings", "signed_in")
-        if not username:
-            picture = self.pictures[17]
-            username = "Guest"
+        password = self.database.return_value("accounts", username)
+        if username == "Guest":
+            picture = self.pictures[14]
         else:
             picture = self.pictures[self.database.return_value("accounts", "icon")]
-        self.guest = ImageTk.PhotoImage(Image.open(picture))
+        self.picture_file = ImageTk.PhotoImage(Image.open(picture))
         self.profile_picture_frame = ttk.Label(self.profile_frame,
-                                               image=self.guest,
-                                               padding=15)
+                                          image=self.picture_file,
+                                          padding=15)
         self.profile_picture_frame.grid(row=0, column=0, rowspan=2)
         self.profile_username = ttk.Label(self.profile_frame,
-                                          font=("Helvetica", 10),
-                                          text="Username:\n" + username,
-                                          padding=10)
+                                     font=("Helvetica", 10),
+                                     text="Username:\n" + username,
+                                     padding=10)
         self.profile_username.grid(row=0, column=1)
+        self.pw_edited = "•" * len(password)
+        self.profile_password = ttk.Label(self.profile_frame,
+                                     font=("Helvetica", 10),
+                                     text="Password:\n" + self.pw_edited,
+                                     padding=10)
+        self.profile_password.grid(row=0, column=2)
 
     def update_ui(self, username):
         if self.profile_username:
@@ -44,3 +60,12 @@ class Accounts(ttk.Frame):
         self.profile_picture_frame.configure(
             image=icon
         )
+
+    def account_page_end_event(self):
+        current_account = self.database.search("accounts", "username",
+                                               f'{self.database.return_value("settings", "signed_in")}')
+        print(current_account)
+        # self.database.replace_specific("accounts",
+        #                                current_account,
+        #
+        #                                )
