@@ -38,7 +38,7 @@ class Main(ttk.Window):
         self.settings_page = settings.Settings(self, self.update_window_theme, self.accounts_page, self.dashboard_page)
 
         self.dashboard_page.pack(fill="both", expand=True, padx=5)
-        self.protocol("WM_DELETE_WINDOW", lambda: exit())
+        self.protocol("WM_DELETE_WINDOW", lambda: self.save_settings())
         self.mainloop()
 
     def page_display_logic(self, page):
@@ -78,6 +78,10 @@ class Main(ttk.Window):
                 ]
             )
         self.update_window_theme(self.database.return_value("settings", "window_theme"))
+
+    def save_settings(self):
+        self.accounts_page.account_page_end_event()
+        exit()
 
 
 if __name__ == "__main__":
