@@ -35,7 +35,7 @@ class Main(ttk.Window):
             self.username,
             self.tasks_page.main_task_list
         )
-        self.settings_page = settings.Settings(self, self.update_window_theme, self.accounts_page, self.dashboard_page)
+        self.settings_page = settings.Settings(self, self.update_window_theme, self.accounts_page, self.dashboard_page, self.tasks_page)
 
         self.dashboard_page.pack(fill="both", expand=True, padx=5)
         self.protocol("WM_DELETE_WINDOW", lambda: self.save_settings())
@@ -81,6 +81,7 @@ class Main(ttk.Window):
 
     def save_settings(self):
         self.accounts_page.account_page_end_event()
+        self.tasks_page.task_page_end_event()
         exit()
 
 

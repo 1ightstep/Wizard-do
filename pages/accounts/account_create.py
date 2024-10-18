@@ -4,7 +4,7 @@ from database.database import Database
 
 
 class AccountCreate(ctk.CTk):
-    def __init__(self, account_page, dashboard_page):
+    def __init__(self, account_page, dashboard_page, tasks_page):
         super().__init__()
         self.title("Create Account")
         self.database = Database("/database/databases")
@@ -46,14 +46,14 @@ class AccountCreate(ctk.CTk):
             self.entry2.configure(show="•")
             self.entry3.configure(show="•")
 
-    def sign_up(self, username, password, account_page, dashboard_page):
+    def sign_up(self, username, password, account_page, dashboard_page, tasks_page):
         accounts = self.database.return_all("accounts")
         if self.entry2.get() != self.entry3.get():
             messagebox.showwarning("Passwords do not match!", "Passwords do not match, please try again")
             return
         if not accounts:
             messagebox.showinfo("Sign Up Successful", "Your account has been successfully created!")
-            account_page.update_ui(username)
+            account_page.update_ui(username, tasks_page)
             dashboard_page.refresh_name(username)
             self.database.add_data("accounts", {'username': username, 'password': password, 'icon': 17})
             self.database.create_data_category(username)

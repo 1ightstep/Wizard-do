@@ -19,6 +19,12 @@ class Accounts(ttk.Frame):
 
         self.account = self.database.search("accounts", "username",
                                             f'{self.database.return_value("settings", "signed_in")}')
+        if not self.account:
+            self.account = {
+                'username': 'Guest',
+                'password': '',
+                'icon': 17
+            }
 
         self.icon_number = ttk.Button(self, text=f"{self.account['icon']}")
         self.icon_frame = ttk.Frame(self.container)
@@ -50,14 +56,14 @@ class Accounts(ttk.Frame):
         self.profile_password.grid(row=0, column=2)
         master.protocol("WM_DELETE_WINDOW", self.account_page_end_event)
 
-    def update_ui(self, username):
+    def update_ui(self, username, tasks_page):
         if self.profile_username:
             self.profile_username.configure(text="Username:\n" + username)
             if username == "Guest":
                 self.database.replace_data("settings", "signed_in", "")
             else:
                 self.database.replace_data("settings", "signed_in", username)
-
+            tasks_page.load_tasks(username)
     def update_icon(self, icon, icon_set):
         self.profile_picture_frame.configure(
             image=icon
@@ -65,14 +71,12 @@ class Accounts(ttk.Frame):
         self.icon_number.config(text=str(icon_set))
 
     def account_page_end_event(self):
-        current_account = self.database.search("accounts", "username",
-                                               f'{self.database.return_value("settings", "signed_in")}')
         new_account = {
-            'username': current_account['username'],
-            'password': current_account['password'],
+            'username': self.account['username'],
+            'password': self.account['password'],
             'icon': int(self.icon_number.cget("text"))
         }
-        print(str(current_account) + "\n" + str(new_account))
+        print(str(self.account) + "\n" + str(new_account))
         # self.database.replace_specific("accounts",
         #                                current_account,
         #

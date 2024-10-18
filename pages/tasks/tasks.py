@@ -44,25 +44,7 @@ class Tasks(ttk.Frame):
         self.tasks_view = TasksView(self)
         self.tasks_view.pack(side="left", fill="both", expand=True)
 
-        # FIX on startup loading the wrong tasks
-        if self.database.return_value("settings", "signed_in"):
-            for task in self.database.return_all(self.database.return_value("settings", "signed_in")):
-                self.create_task(
-                    task_tag=task["task_tag"],
-                    task_name=task["task_name"],
-                    task_date=task["task_date"],
-                    task_time=task["task_time"],
-                    initial_load=True
-                )
-        else:
-            for task in self.database.return_all("tasks"):
-                self.create_task(
-                    task_tag=task["task_tag"],
-                    task_name=task["task_name"],
-                    task_date=task["task_date"],
-                    task_time=task["task_time"],
-                    initial_load=True
-                )
+        self.load_tasks(False)
         master.protocol("WM_DELETE_WINDOW", self.task_page_end_event)
 
     def create_task(self, task_tag, task_name="", task_date="", task_time="", initial_load=False):
@@ -100,6 +82,53 @@ class Tasks(ttk.Frame):
             self.dynamic_task_list.append(task_data_dict)
         self.tasks_view.add_task(task_widget)
         return task_data_dict
+
+    def load_tasks(self, account):
+        if not account:
+            # initial load
+            if self.database.return_value("settings", "signed_in"):
+                # already signed in
+                for task in self.database.return_all(self.database.return_value("settings", "signed_in")):
+                    self.create_task(
+                        task_tag=task["task_tag"],
+                        task_name=task["task_name"],
+                        task_date=task["task_date"],
+                        task_time=task["task_time"],
+                        initial_load=True
+                    )
+            else:
+                # on guest account
+                for task in self.database.return_all("Guest"):
+                    self.create_task(
+                        task_tag=task["task_tag"],
+                        task_name=task["task_name"],
+                        task_date=task["task_date"],
+                        task_time=task["task_time"],
+                        initial_load=True
+                    )
+        else:
+            # reload
+            self.main_task_list = []
+            if self.database.return_value("settings", "signed_in"):
+                # changing accounts, updating tasks to their list
+                for task in self.database.return_all(self.database.return_value("settings", "signed_in")):
+                    self.create_task(
+                        task_tag=task["task_tag"],
+                        task_name=task["task_name"],
+                        task_date=task["task_date"],
+                        task_time=task["task_time"],
+                        initial_load=True
+                    )
+            else:
+                # signing out, using the public "Guest" account
+                for task in self.database.return_all("Guest"):
+                    self.create_task(
+                        task_tag=task["task_tag"],
+                        task_name=task["task_name"],
+                        task_date=task["task_date"],
+                        task_time=task["task_time"],
+                        initial_load=True
+                    )
 
     def destroy_task(self, task_id):
         for task in self.main_task_list:
@@ -205,8 +234,8 @@ class Tasks(ttk.Frame):
         for task in self.dynamic_task_list:
             task["task_id"] = ""
             task["task_widget"] = ""
-        if self.database.return_value("settings", "signed_in") == "":
-            self.database.replace_category("tasks", self.dynamic_task_list)
+        if not self.database.return_value("settings", "signed_in"):
+            self.database.replace_category("Guest", self.dynamic_task_list)
         else:
             self.database.replace_category(f"{self.database.return_value("settings", "signed_in")}", self.dynamic_task_list)
         self.master.destroy()
