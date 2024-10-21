@@ -4,9 +4,8 @@ from tkinter import messagebox
 
 from PIL import Image, ImageTk
 
-from pages.accounts import account_in, account_edit, account_create, account_delete
+from pages.accounts import account_in, account_edit, account_create, account_delete, account_image
 from database.database import Database
-from pages.settings import settings
 
 
 class AccountMenu(ttk.LabelFrame):
@@ -26,11 +25,24 @@ class AccountMenu(ttk.LabelFrame):
             picture = self.database.return_value("icon", f"{self.database.return_value("settings", "signed_in")}")
             self.profile_username.config(text=self.database.return_value("settings", "signed_in"))
         self.picture_file = ImageTk.PhotoImage(Image.open(picture).resize((125, 125)))
-        self.profile_picture_frame = ttk.Label(self.account_view,
-                                          image=self.picture_file,
-                                          padding=10)
-        self.profile_picture_frame.pack(padx=20, pady=(5, 10), expand=True)
+        self.picture_edit_file = ImageTk.PhotoImage(Image.open("public/images/edit.png").resize((40, 40)))
+        self.profile_picture_frame = ttk.Frame(self.account_view)
+        self.profile_picture_frame.pack(padx=20, pady=(0, 10), expand=True)
+        self.profile_picture_frame.columnconfigure((0, 0), weight=1, minsize=100)
+        self.profile_picture_frame.rowconfigure((0, 0), weight=1, minsize=100)
+        self.profile_picture = ttk.Label(self.profile_picture_frame,
+                                         image=self.picture_file
+                                         )
 
+        self.profile_picture.grid(row=0, column=0, rowspan=2, columnspan=2)
+        self.profile_picture_edit_btn = ttk.Button(self.profile_picture_frame,
+                                                   image=self.picture_edit_file,
+                                                   padding=0,
+                                                   command=self.profile_picture_edit
+                                                   )
+        if not self.database.return_value("settings", "signed_in"):
+            self.profile_picture_edit_btn.configure(state="disabled")
+        self.profile_picture_edit_btn.grid(row=1, column=1, sticky="se")
         self.profile_username.pack(padx=40, pady=(3, 20), expand=True)
         self.sign_out = ttk.Button(self.account_view,
                                    text="Sign Out",
@@ -73,7 +85,7 @@ class AccountMenu(ttk.LabelFrame):
                                        )
             account_button.pack(padx=5, pady=5, fill="x", expand=True, side="top")
         self.sign_up = ttk.Button(self.account_view2,
-                                  text="Sign Up",
+                                  text="Create Account",
                                   padding=5,
                                   width=42,
                                   command=lambda: account_create.AccountCreate(self, dashboard_page, tasks_page))
@@ -105,7 +117,7 @@ class AccountMenu(ttk.LabelFrame):
             messagebox.showwarning("Can't sign out", "You are on a guest account!")
 
     def update_icon(self, icon, hlr):
-        self.profile_picture_frame.configure(
+        self.profile_picture.configure(
             image=icon
         )
 
@@ -113,3 +125,9 @@ class AccountMenu(ttk.LabelFrame):
         self.profile_username.config(text=username)
         tasks_page.load_tasks(username)
         dashboard_page.refresh_ui(username)
+        if username == "":
+            self.profile_picture_edit_btn.configure(state="disabled")
+
+    def profile_picture_edit(self):
+        account_image.AccountImage(self, self)
+        self.profile_picture_edit_btn.configure(state="disabled")

@@ -4,9 +4,10 @@ from PIL import Image, ImageTk
 from public.images.resources import img_to_number
 
 
-class AccountImage(ttk.Frame):
+class AccountImage(ttk.Toplevel):
     def __init__(self, master, account_page):
         super().__init__(master)
+        self.title("Account Profile Pictures")
         self.database = Database("/database/databases")
         self.pictures = img_to_number.pictures
         self.account = self.database.search("accounts", "username",
@@ -15,6 +16,7 @@ class AccountImage(ttk.Frame):
             self.account = {'username': 'Guest'}
         else:
             self.create_icons(account_page)
+        self.mainloop()
 
     def create_icons(self, account_page):
         img = 1

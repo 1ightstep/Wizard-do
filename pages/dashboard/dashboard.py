@@ -6,6 +6,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap.scrolled import ScrolledFrame
 from PIL import Image, ImageTk
 from database.database import Database
+Image.CUBIC = Image.BICUBIC
 
 
 class QuoteWidget(ttk.LabelFrame):
@@ -118,11 +119,6 @@ class Dashboard(ttk.Frame):
             picture = "public/images/meh.png"
         else:
             picture = self.database.return_value("icon", f"{self.database.return_value("settings", "signed_in")}")
-        self.picture_file = ImageTk.PhotoImage(Image.open(picture).resize((75, 75)))
-        self.profile_picture_frame = ttk.Label(self,
-                                               image=self.picture_file,
-                                               padding=15)
-        self.profile_picture_frame.pack(fill="x", ipady=10, side="right")
         month_to_name = {
             1: "January",
             2: "February",
@@ -140,6 +136,14 @@ class Dashboard(ttk.Frame):
         date = time.strftime(f"%A, {month_to_name[time.localtime(time.time()).tm_mon]} %d, %Y ", time.localtime(time.time()))
         self.date = ttk.Label(self, text=f"Today is {date}")
         self.date.pack(fill="x")
+
+        self.picture_file = ImageTk.PhotoImage(Image.open(picture).resize((75, 75)))
+        self.label = ttk.Label(self,
+                               image=self.picture_file,
+                               )
+        self.label.image = picture
+        self.label.pack_propagate(False)
+        self.label.place(relx=0.98, rely=0.02, anchor="ne")
 
         self.info_frame = InfoFrame(self, self.task_list)
         self.info_frame.place(relx=0, rely=0.15, relwidth=0.7, relheight=0.8)
