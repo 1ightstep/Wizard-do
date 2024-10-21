@@ -69,7 +69,7 @@ class Database:
     def add_data(self, category_name: str, data_object: dict) -> None:
         self.category_error(category_name)
         with open(f'{self.database_dir_path}/{category_name}.txt', 'a') as f:
-            f.write(f"{str(data_object)}\n")
+            f.write(f"\n{str(data_object)}\n")
             f.close()
 
     def replace_category(self, category_name: str, data_list: list) -> None:

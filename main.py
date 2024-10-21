@@ -28,15 +28,14 @@ class Main(ttk.Window):
         self.settings_setup()
 
         self.navbar = (navbar.Navbar(self, self.page_display_logic).pack(side="left", fill="y"))
-        self.accounts_page = account.Accounts(self)
         self.tasks_page = tasks.Tasks(self)
         self.dashboard_page = dashboard.Dashboard(
             self,
             self.username,
             self.tasks_page.main_task_list
         )
-        self.settings_page = settings.Settings(self, self.update_window_theme, self.accounts_page, self.dashboard_page, self.tasks_page)
-
+        self.settings_page = settings.Settings(self, self.update_window_theme)
+        self.accounts_page = account.Accounts(self, self.dashboard_page, self.tasks_page)
         self.dashboard_page.pack(fill="both", expand=True, padx=5)
         self.protocol("WM_DELETE_WINDOW", lambda: self.save_settings())
         self.mainloop()
@@ -48,9 +47,10 @@ class Main(ttk.Window):
         self.accounts_page.forget()
         if page == "dashboard":
             self.dashboard_page.pack(fill="both", expand=True, padx=5)
-            self.dashboard_page.refresh_ui()
+            self.dashboard_page.refresh_ui(self.database.return_value("settings", "signed_in"))
         elif page == "tasks":
             self.tasks_page.pack(fill="both", expand=True, padx=5)
+            self.tasks_page.load_tasks(self.database.return_value("settings", "signed_in"))
         elif page == "settings":
             self.settings_page.pack(fill="both", expand=True, padx=5)
         elif page == "accounts":

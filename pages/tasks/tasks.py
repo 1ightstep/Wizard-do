@@ -84,18 +84,25 @@ class Tasks(ttk.Frame):
         return task_data_dict
 
     def load_tasks(self, account):
+        for task in self.main_task_list:
+            task["task_widget"].destroy()
+        self.main_task_list = []
         if not account:
             # initial load
             if self.database.return_value("settings", "signed_in"):
                 # already signed in
-                for task in self.database.return_all(self.database.return_value("settings", "signed_in")):
-                    self.create_task(
-                        task_tag=task["task_tag"],
-                        task_name=task["task_name"],
-                        task_date=task["task_date"],
-                        task_time=task["task_time"],
-                        initial_load=True
-                    )
+                try:
+                    for task in self.database.return_all(self.database.return_value("settings", "signed_in")):
+                        self.create_task(
+                            task_tag=task["task_tag"],
+                            task_name=task["task_name"],
+                            task_date=task["task_date"],
+                            task_time=task["task_time"],
+                            initial_load=True
+                        )
+                except Exception:
+                    # probably invalid username
+                    self.database.replace_data("settings", "signed_in", '')
             else:
                 # on guest account
                 for task in self.database.return_all("Guest"):
@@ -108,7 +115,6 @@ class Tasks(ttk.Frame):
                     )
         else:
             # reload
-            self.main_task_list = []
             if self.database.return_value("settings", "signed_in"):
                 # changing accounts, updating tasks to their list
                 for task in self.database.return_all(self.database.return_value("settings", "signed_in")):

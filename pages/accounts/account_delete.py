@@ -4,7 +4,7 @@ from database.database import Database
 
 
 class AccountDelete(ctk.CTk):
-    def __init__(self, account_page, dashboard_page):
+    def __init__(self, account_page, dashboard_page, tasks_page):
         super().__init__()
         self.title("Delete Account")
         self.database = Database("/database/databases")
@@ -28,10 +28,28 @@ class AccountDelete(ctk.CTk):
                                         command=self.show)
         self.checkbox.pack(pady=5, padx=125, side="top", anchor=ctk.W)
         self.submit = ctk.CTkButton(self.frame, text="Enter", corner_radius=0,
-                                    command=lambda: self.delete(self.entry1.get(), self.entry2.get(), account_page, dashboard_page))
+                                    command=lambda: self.delete(
+                                        self.entry1.get(),
+                                        self.entry2.get(),
+                                        account_page,
+                                        dashboard_page,
+                                        tasks_page
+                                    ))
         self.submit.pack(pady=(0, 25), padx=10, side="right", anchor="se")
-        self.entry1.bind("<Return>", lambda e: self.delete(self.entry1.get(), self.entry2.get(), account_page, dashboard_page))
-        self.entry2.bind("<Return>", lambda e: self.delete(self.entry1.get(), self.entry2.get(), account_page, dashboard_page))
+        self.entry1.bind("<Return>", lambda e: self.delete(
+                                        self.entry1.get(),
+                                        self.entry2.get(),
+                                        account_page,
+                                        dashboard_page,
+                                        tasks_page
+                                    ))
+        self.entry2.bind("<Return>", lambda e: self.delete(
+                                        self.entry1.get(),
+                                        self.entry2.get(),
+                                        account_page,
+                                        dashboard_page,
+                                        tasks_page
+                                    ))
         self.protocol("WM_DELETE_WINDOW", lambda: self.withdraw())
         self.mainloop()
 
@@ -43,19 +61,19 @@ class AccountDelete(ctk.CTk):
             self.entry1.configure(show="•")
             self.entry2.configure(show="•")
 
-    def delete(self, password, confirm_password, account_page, dashboard_page):
+    def delete(self, password, confirm_password, account_page, dashboard_page, tasks_page):
         account_del = self.database.return_value("settings", "signed_in")
         if self.entry1.get() != self.entry2.get():
             messagebox.showwarning("Passwords do not match!", "Passwords do not match, please try again")
             return
-        if not account_del:
-            messagebox.showinfo("Account Deletion Successful", "Your account has been successfully deleted!")
-            account_page.update_ui("Guest")
-            dashboard_page.refresh_name("Guest")
-            self.database.delete_data("accounts", "username", f"{self.database.return_value("settings", "signed_in")}")
-            self.database.create_data_category(password)
-            self.withdraw()
-            return
         if not password or not confirm_password:
             messagebox.showwarning("Empty Box!", "You forgot to fill in one of the boxes, try again")
+            return
+        if account_del:
+            messagebox.showinfo("Account Deletion Successful", "Your account has been successfully deleted!")
+            account_page.update_ui("Guest", tasks_page, dashboard_page)
+            dashboard_page.refresh_ui("Guest")
+            self.database.delete_data("accounts", "username", f"{self.database.return_value("settings", "signed_in")}")
+            self.database.delete_data("icon", f"{self.database.return_value("settings", "signed_in")}", "")
+            self.withdraw()
             return

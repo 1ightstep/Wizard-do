@@ -1,14 +1,13 @@
 import ttkbootstrap as ttk
 from ttkbootstrap.scrolled import ScrolledFrame
 from database.database import Database
-from pages.settings import settings_account
 from pages.accounts import account_image
 from public.window_themes import window_themes as themes
 from math import *
 
 
 class Settings(ttk.Frame):
-    def __init__(self, master, update_win_theme_func, account_page, dashboard_page, tasks_page):
+    def __init__(self, master, update_win_theme_func):
         super().__init__(master)
         self.database = Database("/database/databases")
         self.title = ttk.Label(self, text="Settings", font=("Helvetica", 20, "bold"))
@@ -22,10 +21,6 @@ class Settings(ttk.Frame):
         self.theme_option_frame.pack(padx=5, pady=5, fill="both", expand=True, side="top")
         self.theme_option_frame.grid_rowconfigure(tuple(range(self.theme_frame_rows)), weight=1, minsize=100)
         self.theme_option_frame.grid_columnconfigure(tuple(range(self.theme_frame_cols)), weight=1, minsize=100)
-
-        # account_page will be passed through anything that changes the account (sign in, out, delete account, etc.)
-        self.account_dir = settings_account.AccountMenu(self.container, account_page, dashboard_page, tasks_page)
-        self.account_dir.pack(padx=5, pady=5, fill="both", expand=True, side="top")
 
         for index, theme in enumerate(themes):
             col = index % self.theme_frame_cols

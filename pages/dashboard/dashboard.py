@@ -4,8 +4,9 @@ import time
 
 import ttkbootstrap as ttk
 from ttkbootstrap.scrolled import ScrolledFrame
-from PIL import Image
-Image.CUBIC = Image.BICUBIC
+from PIL import Image, ImageTk
+from database.database import Database
+
 
 class QuoteWidget(ttk.LabelFrame):
     def __init__(self, master, title, content):
@@ -27,13 +28,13 @@ class InfoWidget(ttk.LabelFrame):
             metersize=200,
             amounttotal=a_total,
             amountused=a_used,
-            textleft="",
-            textright="",
+            textleft=None,
+            textright=None,
             subtext=subtext
         )
         self.content.pack()
 
-    def refresh_ui(self, a_used, a_total, subtext):
+    def refresh_ui_info(self, a_used, a_total, subtext):
         self.content.configure(amountused=a_used, amounttotal=a_total, subtext=subtext)
 
 
@@ -50,8 +51,10 @@ class InfoFrame(ttk.Frame):
 
         self.total_tasks = InfoWidget(self,"Total Tasks", len(self.task_list), 1, "Total Tasks")
         self.total_tasks.grid(row=1, column=0, sticky="nsew", padx=5, pady=1)
-
-        self.tasks_completed = InfoWidget(self,"Tasks Completed", self.get_completed_tasks(), len(task_list), "Tasks Completed")
+        if len(self.task_list) < 1:
+            self.tasks_completed = InfoWidget(self,"Tasks Completed", self.get_completed_tasks(), 1, "Tasks Completed")
+        else:
+            self.tasks_completed = InfoWidget(self, "Tasks Completed", self.get_completed_tasks(), len(task_list), "Tasks Completed")
         self.tasks_completed.grid(row=1, column=1, sticky="nsew", padx=5, pady=1)
 
     def get_completed_tasks(self):
@@ -62,9 +65,12 @@ class InfoFrame(ttk.Frame):
             quotes = [quote for quote in f.readlines() if quote != "\n"]
         return random.choice(quotes)
 
-    def refresh_ui(self):
-        self.tasks_completed.refresh_ui(self.get_completed_tasks(), len(self.task_list), "Tasks Completed")
-        self.total_tasks.refresh_ui(len(self.task_list), 1, "Total Tasks")
+    def refresh_info(self):
+        if len(self.task_list) < 1:
+            self.tasks_completed.refresh_ui_info(self.get_completed_tasks(), 1, "Tasks Completed")
+        else:
+            self.tasks_completed.refresh_ui_info(self.get_completed_tasks(), len(self.task_list), "Tasks Completed")
+        self.total_tasks.refresh_ui_info(len(self.task_list), 1, "Total Tasks")
 
 
 class TaskWidget(ttk.Frame):
@@ -85,9 +91,9 @@ class TasksFrame(ttk.LabelFrame):
         self.scrolled_frame.pack(fill="both", expand=True)
 
         self.task_widgets = []
-        self.refresh_ui()
+        self.refresh_list(1)
 
-    def refresh_ui(self):
+    def refresh_list(self, username):
         filtered_list = list(task for task in self.task_list if task["task_status"] == "ongoing")
         filtered_list = sorted(
             filtered_list,
@@ -104,10 +110,19 @@ class TasksFrame(ttk.LabelFrame):
 class Dashboard(ttk.Frame):
     def __init__(self, master, username, task_list):
         super().__init__(master)
+        self.database = Database("/database/databases")
         self.task_list = task_list
         self.title = ttk.Label(self, text=f"Hello, {username}", font=("Helvetica", 20, "bold"))
         self.title.pack(fill="x", ipady=10)
-
+        if not self.database.return_value("settings", "signed_in"):
+            picture = "public/images/meh.png"
+        else:
+            picture = self.database.return_value("icon", f"{self.database.return_value("settings", "signed_in")}")
+        self.picture_file = ImageTk.PhotoImage(Image.open(picture).resize((75, 75)))
+        self.profile_picture_frame = ttk.Label(self,
+                                               image=self.picture_file,
+                                               padding=15)
+        self.profile_picture_frame.pack(fill="x", ipady=10, side="right")
         month_to_name = {
             1: "January",
             2: "February",
@@ -132,9 +147,9 @@ class Dashboard(ttk.Frame):
         self.tasks_frame = TasksFrame(self, self.task_list)
         self.tasks_frame.place(relx=0.7, rely=0.15, relwidth=0.3, relheight=0.8)
 
-    def refresh_ui(self):
-        self.info_frame.refresh_ui()
-        self.tasks_frame.refresh_ui()
-
-    def refresh_name(self, username):
-        self.title.config(text=f"Hello, {username}")
+    def refresh_ui(self, username):
+        self.info_frame.refresh_info()
+        if username:
+            self.title.configure(text=f"Hello, {username}")
+        else:
+            self.title.configure(text="Hello, Guest")

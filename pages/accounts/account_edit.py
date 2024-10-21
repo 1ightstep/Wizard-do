@@ -72,7 +72,6 @@ class AccountEdit(ctk.CTk):
             messagebox.showinfo("Nothing changed", "You set the password the same as before, nothing changed!")
         # when it ACTUALLY changes the password
         else:
-            # fix this so it doesn't change all passwords, instead just one password
             new_account = {
                 'username': self.database.return_value("settings", "signed_in"),
                 'password': new_password
