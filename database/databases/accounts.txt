@@ -1,1 +1,1 @@
-{'username': 'rizzman64', 'password': '160021e85860fe5fd3d975b5655e2c54', 'email': 'alphasigma'}
+{'username': 'rizzman64', 'password': '160021e85860fe5fd3d975b5655e2c54', 'email': 'alexanderleeisme@gmail.com'}

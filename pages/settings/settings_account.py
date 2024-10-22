@@ -144,3 +144,6 @@ class AccountMenu(ttk.LabelFrame):
 
     def get_important_widgets(self):
         return [self.profile_username, self.profile_picture]
+
+    def get_username(self):
+        return self.profile_username.cget("text")
