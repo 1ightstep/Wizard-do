@@ -1,7 +1,11 @@
 import hashlib
+import smtplib
+from random import randint
+
 import customtkinter as ctk
 from tkinter import messagebox
 from database.database import Database
+from pages.accounts import account_recover
 
 
 class AccountIn(ctk.CTk):
@@ -28,15 +32,24 @@ class AccountIn(ctk.CTk):
                                          corner_radius=0,
                                          command=self.show)
         self.checkbox1.pack(pady=5, padx=125, side="top", anchor=ctk.W)
+        self.checkbox2 = ctk.CTkCheckBox(self.frame,
+                                         width=25,
+                                         height=25,
+                                         text="Remember Me",
+                                         corner_radius=0)
+        self.checkbox2.pack(pady=5, padx=125, side="top", anchor=ctk.W)
         self.forgot_password = ctk.CTkButton(self.frame,
                                              width=25,
                                              height=25,
                                              text="Forgot Password?",
                                              border_width=0,
-                                             border_color="#dd0525")
+                                             border_color="#dd0525",
+                                             command=lambda: self.save_account(username)
+                                             )
         self.submit = ctk.CTkButton(self.frame, text="Enter", corner_radius=0, command=lambda: self.login(
             username,
             self.entry.get(),
+            self.checkbox2.get(),
             account_page,
             dashboard_page,
             tasks_page
@@ -44,13 +57,13 @@ class AccountIn(ctk.CTk):
         self.entry.bind("<Return>", lambda e: self.login(
             username,
             self.entry.get(),
+            self.checkbox2.get(),
             account_page,
             dashboard_page,
             tasks_page
         ))
         self.submit.pack(pady=(0, 25), padx=10, side="right", anchor="se")
-        self.error_message = ctk.CTkLabel(self.frame, text_color="#dd0525", text="Couldn't sign you in")
-        self.total_attempts = 0
+        self.forgot_password.pack(pady=(0, 25), padx=10, side="right", anchor="se")
         self.protocol("WM_DELETE_WINDOW", lambda: self.withdraw())
         self.mainloop()
 
@@ -60,7 +73,7 @@ class AccountIn(ctk.CTk):
         else:
             self.entry.configure(show="•")
 
-    def login(self, username, password, account_page, dashboard_page, tasks_page):
+    def login(self, username, password, memory, account_page, dashboard_page, tasks_page):
         # return ALL accounts, sift through each one for matching account
         accounts = self.database.return_all("accounts")
         if username == "" or password == "":
@@ -71,19 +84,43 @@ class AccountIn(ctk.CTk):
             message = password.encode()
             hashed.update(message)
             if instance["username"] == username and str(hashed.hexdigest()) == instance["password"]:
-                self.log_check(True, username, account_page, dashboard_page, tasks_page)
+                self.log_check(True, username, memory, account_page, dashboard_page, tasks_page)
                 return
-        self.log_check(False, None, None, None, None)
+        self.log_check(False, None, None, None, None, None)
 
-    def log_check(self, value, username, account_page, dashboard_page, tasks_page):
+    def log_check(self, value, username, memory, account_page, dashboard_page, tasks_page):
         if value:
-            self.submit.configure(bg_color="#4ddd05")
             account_page.update_ui(username, tasks_page, dashboard_page)
+            tasks_page.load_tasks(username)
             dashboard_page.refresh_ui(username)
+            if memory:
+                self.database.replace_data("settings", "signed_in", username)
             self.protocol("WM_DELETE_WINDOW", self.withdraw())
-        else:
-            self.error_message.pack(pady=(0, 25), padx=10, side="right", anchor="se")
-            self.total_attempts += 1
-            if self.total_attempts >= 3:
-                self.error_message.pack_forget()
-                self.forgot_password.pack(pady=(0, 25), padx=10, side="right", anchor="se")
+
+    def save_account(self, username):
+        try:
+            self.smtpserver = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+            self.smtpserver.ehlo()
+            self.smtpserver.login('wizarddoauthteam@gmail.com', 'dolm zzwc bppk uasa')
+            self.confirm_number = randint(111111, 999999)
+            self.smtpserver.sendmail(
+                "wizarddoauthteam@gmail.com",
+                f"{self.database.search("accounts", "username", f"{username}")["email"]}",
+                f"""\n
+                Hello new user!\n\n
+                Your verification code is {str(self.confirm_number)}.
+                \nIf you got this email by mistake, ignore it.
+                \n\nFrom,\nThe Wizard-Do Authentication Team
+                """
+            )
+        except:
+            # APOCALYPSE scenario, hope NO user EVER has to go through this
+            self.forgot_password.configure(border_color="#dd0525",
+                                           text="Sorry, we're unable to contact the provided email address."
+                                           )
+            self.smtpserver.close()
+            return
+        self.smtpserver.close()
+        self.frame.pack_forget()
+        self.frame = account_recover.AccountRecover(self, self.confirm_number)
+        self.frame.pack(fill="both", expand=True)

@@ -31,6 +31,7 @@ class AccountMenu(ttk.LabelFrame):
         self.profile_picture_frame.columnconfigure((0, 0), weight=1, minsize=100)
         self.profile_picture_frame.rowconfigure((0, 0), weight=1, minsize=100)
         self.profile_picture = ttk.Label(self.profile_picture_frame,
+                                         text=picture,
                                          image=self.picture_file
                                          )
 
@@ -38,11 +39,10 @@ class AccountMenu(ttk.LabelFrame):
         self.profile_picture_edit_btn = ttk.Button(self.profile_picture_frame,
                                                    image=self.picture_edit_file,
                                                    padding=0,
-                                                   command=self.profile_picture_edit
+                                                   command=lambda: account_image.AccountImage(self, self, dashboard_page)
                                                    )
-        if not self.database.return_value("settings", "signed_in"):
-            self.profile_picture_edit_btn.configure(state="disabled")
-        self.profile_picture_edit_btn.grid(row=1, column=1, sticky="se")
+        if self.database.return_value("settings", "signed_in"):
+            self.profile_picture_edit_btn.grid(row=1, column=1, sticky="se")
         self.profile_username.pack(padx=40, pady=(3, 20), expand=True)
         self.sign_out = ttk.Button(self.account_view,
                                    text="Sign Out",
@@ -52,7 +52,7 @@ class AccountMenu(ttk.LabelFrame):
         self.account_change = ttk.Button(self.account_view,
                                          text="Change Password",
                                          padding=5,
-                                         command=self.account_edit)
+                                         command=lambda: self.account_edit(self))
         self.account_change.pack(padx=5, pady=5, fill="both", expand=True, side="top")
         self.del_account = ttk.Button(self.account_view,
                                       text="Delete Account",
@@ -60,6 +60,8 @@ class AccountMenu(ttk.LabelFrame):
                                       command=lambda: self.delete_account(self, dashboard_page, tasks_page))
         if self.profile_username.cget("text") == "Guest":
             self.del_account.config(state="disabled")
+            self.account_change.configure(state="disabled")
+            self.sign_out.configure(state="disabled")
         self.del_account.pack(padx=5, pady=5, fill="both", expand=True, side="top")
         self.account_view2 = ttk.Frame(self)
 
@@ -74,10 +76,10 @@ class AccountMenu(ttk.LabelFrame):
                                             text=account["username"] + "     ---->",
                                             width=40,
                                             command=lambda: account_in.AccountIn(account["username"],
-                                                                               self,
-                                                                               dashboard_page,
-                                                                               tasks_page
-                                                                               ))
+                                                                                 self,
+                                                                                 dashboard_page,
+                                                                                 tasks_page
+                                                                                 ))
                 account_button.pack(padx=5, pady=5, fill="x", expand=True, side="top")
         else:
             account_button = ttk.Label(self.account_list,
@@ -96,15 +98,17 @@ class AccountMenu(ttk.LabelFrame):
         if self.database.return_value("settings", "signed_in") == "":
             messagebox.showwarning("No options", "Cannot edit guest accounts!\nIf you just created an account, restart the app to change your password.")
         else:
-            account_edit.AccountEdit(account_page)
+            account_edit.AccountEdit()
 
     # function named sign_out_cmd to not mix up with button sign_out
     def sign_out_cmd(self, account_page, dashboard_page, tasks_page):
-        if self.database.return_value("settings", "signed_in"):
+        if self.profile_username.cget("text") != "Guest":
             if messagebox.askyesno("Confirm Sign Out", "Are you sure you want to sign out?"):
                 self.database.replace_data("settings", "signed_in", "")
                 account_page.update_ui("Guest", tasks_page, dashboard_page)
                 dashboard_page.refresh_ui("Guest")
+                guest_photo = ImageTk.PhotoImage(Image.open("public/images/meh.png"))
+                dashboard_page.refresh_icon(guest_photo)
         else:
             messagebox.showwarning("Can't sign out", "You are on a guest account, can't sign out now!")
 
@@ -116,18 +120,29 @@ class AccountMenu(ttk.LabelFrame):
         else:
             messagebox.showwarning("Can't sign out", "You are on a guest account!")
 
-    def update_icon(self, icon, hlr):
+    def update_icon(self, icon_var, icon_size_1, icon_size_2, dashboard_page):
+        dashboard_page.refresh_icon(icon_size_2)
         self.profile_picture.configure(
-            image=icon
+            text=icon_var,
+            image=icon_size_1
         )
 
     def update_ui(self, username, tasks_page, dashboard_page):
         self.profile_username.config(text=username)
         tasks_page.load_tasks(username)
         dashboard_page.refresh_ui(username)
-        if username == "":
-            self.profile_picture_edit_btn.configure(state="disabled")
+        if username and self.profile_username.cget("text") != "Guest":
+            self.profile_picture_edit_btn.grid(row=1, column=1, sticky="se")
+        else:
+            self.profile_picture_edit_btn.grid_forget()
+        if self.profile_username.cget("text") == "Guest":
+            self.del_account.config(state="disabled")
+            self.account_change.configure(state="disabled")
+            self.sign_out.configure(state="disabled")
+        else:
+            self.del_account.config(state="normal")
+            self.account_change.configure(state="normal")
+            self.sign_out.configure(state="normal")
 
-    def profile_picture_edit(self):
-        account_image.AccountImage(self, self)
-        self.profile_picture_edit_btn.configure(state="disabled")
+    def get_important_widgets(self):
+        return [self.profile_username, self.profile_picture]

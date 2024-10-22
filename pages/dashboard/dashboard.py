@@ -155,5 +155,7 @@ class Dashboard(ttk.Frame):
         self.info_frame.refresh_info()
         if username:
             self.title.configure(text=f"Hello, {username}")
-        else:
-            self.title.configure(text="Hello, Guest")
+
+    def refresh_icon(self, icon):
+        self.label.configure(image=icon)
+        self.label.image = icon

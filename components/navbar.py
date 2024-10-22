@@ -1,6 +1,7 @@
-import customtkinter as ctk
 import ttkbootstrap as ttk
 import tkinter as tk
+
+
 class Navbar(ttk.Frame):
     def __init__(self, master, page_display_function):
         super().__init__(master)

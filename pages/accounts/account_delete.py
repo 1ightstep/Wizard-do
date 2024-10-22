@@ -19,7 +19,7 @@ class AccountDelete(ctk.CTk):
         self.frame.pack(fill="both", expand=True)
         self.entry1 = ctk.CTkEntry(self.frame, placeholder_text="Password", corner_radius=5, width=250, height=50)
         self.entry1.configure(show="•")
-        self.entry1.pack(pady=5, padx=10, side="top")
+        self.entry1.pack(pady=(40, 5), padx=10, side="top")
         self.entry2 = ctk.CTkEntry(self.frame, placeholder_text="Confirm Password", corner_radius=5, width=250,
                                    height=50)
         self.entry2.configure(show="•")

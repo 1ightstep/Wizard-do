@@ -115,9 +115,9 @@ class Tasks(ttk.Frame):
                     )
         else:
             # reload
-            if self.database.return_value("settings", "signed_in"):
+            if account != "Guest":
                 # changing accounts, updating tasks to their list
-                for task in self.database.return_all(self.database.return_value("settings", "signed_in")):
+                for task in self.database.return_all(f"{account}"):
                     self.create_task(
                         task_tag=task["task_tag"],
                         task_name=task["task_name"],

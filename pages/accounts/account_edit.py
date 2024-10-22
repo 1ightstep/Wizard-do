@@ -1,10 +1,10 @@
 import customtkinter as ctk
-from tkinter import messagebox
 from database.database import Database
+import hashlib
 
 
 class AccountEdit(ctk.CTk):
-    def __init__(self, account_page):
+    def __init__(self):
         super().__init__()
         self.database = Database("/database/databases")
         self.title("Password Manager")
@@ -16,6 +16,9 @@ class AccountEdit(ctk.CTk):
         self.header.pack(fill="x", pady=(10, 0))
         self.frame = ctk.CTkFrame(self)
         self.frame.pack(fill="both", expand=True)
+        self.account = self.database.search("accounts",
+                                            "username",
+                                            f'{self.database.return_value("settings", "signed_in")}')
         self.entry1 = ctk.CTkEntry(self.frame, placeholder_text="Original password", corner_radius=5, width=250, 
                                    height=50)
         self.entry1.configure(show="•")
@@ -58,29 +61,41 @@ class AccountEdit(ctk.CTk):
                 self.entry1.configure(show="•")
 
     def edit(self, old_password, new_password, new_password_2):
+        for item in self.frame.winfo_children():
+            if item == ctk.CTkButton:
+                item.configure(border_color=['#979DA2', '#565B5E'])
+                if not item.get():
+                    item.configure(border_color="#dd0525")
+                    return
         current_account = self.database.search("accounts", "username", f'{self.database.return_value("settings", "signed_in")}')
+        hashed = hashlib.md5()
+        new_pw_edited = new_password.encode()
+        hashed.update(new_pw_edited)
+        hashed2 = hashlib.md5()
+        old_pw_edited = old_password.encode()
+        hashed2.update(old_pw_edited)
         # make sure the old password isn't the new password
-        if old_password != current_account["password"]:
-            messagebox.showerror("Incorrect password!", "The old password doesn't match, try again")
+        if hashed2.hexdigest() != current_account["password"]:
+            print(current_account["password"] + " isn't " + hashed2.hexdigest())
+            self.entry1.configure(border_color="#dd0525")
             return
         # make sure confirm box matches new password
         elif new_password != new_password_2:
-            messagebox.showwarning("Password does not match!", "Password and confirm password do not match, please try again")
+            self.entry2.configure(border_color="#dd0525")
+            self.entry3.configure(border_color="#dd0525")
             return
         # if user "changes" the password, but it's the same as before
         elif old_password == new_password:
-            messagebox.showinfo("Nothing changed", "You set the password the same as before, nothing changed!")
+            self.entry1.configure(border_color="#dd0525")
+            self.entry2.configure(border_color="#dd0525")
         # when it ACTUALLY changes the password
         else:
-            new_account = {
-                'username': self.database.return_value("settings", "signed_in"),
-                'password': new_password
-            }
             self.database.replace_specific("accounts",
+                                           self.account,
                                            {
-                                               'username': self.database.return_value("settings", "signed_in"),
-                                               'password': old_password
-                                           },
-                                           new_account)
-            messagebox.showinfo("Success!", "Your password has been successfully changed!")
+                                               'username': self.account["username"],
+                                               'password': hashed,
+                                               'icon': self.account["icon"],
+                                               'email': self.account["email"]
+                                           })
             self.protocol("WM_DELETE_WINDOW", self.withdraw())
