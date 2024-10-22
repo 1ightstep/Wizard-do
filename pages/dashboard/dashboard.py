@@ -6,6 +6,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap.scrolled import ScrolledFrame
 from PIL import Image, ImageTk
 from database.database import Database
+from pages.settings import settings_account
 Image.CUBIC = Image.BICUBIC
 
 
@@ -92,9 +93,9 @@ class TasksFrame(ttk.LabelFrame):
         self.scrolled_frame.pack(fill="both", expand=True)
 
         self.task_widgets = []
-        self.refresh_list(1)
+        self.refresh_list()
 
-    def refresh_list(self, username):
+    def refresh_list(self):
         filtered_list = list(task for task in self.task_list if task["task_status"] == "ongoing")
         filtered_list = sorted(
             filtered_list,
@@ -155,6 +156,7 @@ class Dashboard(ttk.Frame):
         self.info_frame.refresh_info()
         if username:
             self.title.configure(text=f"Hello, {username}")
+            
 
     def refresh_icon(self, icon):
         self.label.configure(image=icon)

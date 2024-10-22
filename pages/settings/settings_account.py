@@ -65,9 +65,6 @@ class AccountMenu(ttk.LabelFrame):
         self.del_account.pack(padx=5, pady=5, fill="both", expand=True, side="top")
         self.account_view2 = ttk.Frame(self)
 
-        # self.email_view = ttk.Frame(self)
-        # self.email_view.pack(padx=5, pady=5, expand=True, side="top")
-
         self.account_list = ScrolledFrame(self)
         self.account_list.pack(padx=5, pady=5, fill="both", expand=True, side="top")
         if self.database.return_all("accounts"):
@@ -126,6 +123,7 @@ class AccountMenu(ttk.LabelFrame):
             text=icon_var,
             image=icon_size_1
         )
+        self.profile_picture.image = icon_size_1
 
     def update_ui(self, username, tasks_page, dashboard_page):
         self.profile_username.config(text=username)

@@ -170,5 +170,5 @@ class AccountCreate1(ctk.CTkFrame):
         self.database.add_data("icon", {f"{new_account[0]}": "public/images/meh.png"})
         self.database.create_data_category(new_account[0])
         self.database.replace_data("settings", "signed_in", f"{new_account[0]}")
-        messagebox.showinfo("Reopen the app to start using your account.")
+        messagebox.showinfo("Notice!", "Reopen the app to start using your account.")
         exit()
