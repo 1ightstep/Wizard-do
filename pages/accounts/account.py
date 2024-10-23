@@ -15,6 +15,7 @@ class Accounts(ttk.Frame):
         self.frame.pack(fill="both", expand=True)
 
     def account_page_end_event(self, get_username):
+        print(get_username)
         current_account_icon = self.database.return_value("icon",
                                                           f'{get_username}')
         current_account = self.database.search("accounts",
@@ -30,7 +31,6 @@ class Accounts(ttk.Frame):
             new_account_icon = {
                 f'{current_account["username"]}': f'{self.frame.selected_pfp}'
             }
-            print(new_account_icon)
             self.database.replace_specific("accounts",
                                            {
                                                'username': get_username,

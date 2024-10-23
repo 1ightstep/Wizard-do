@@ -9,13 +9,16 @@ from pages.accounts import account_in, account_edit, account_create, account_del
 class AccountMenu(ttk.LabelFrame):
     def __init__(self, master, get_username, update_username):
         super().__init__(master=master, text="Profile")
+        self.master = master
         self.database = Database("/database/database")
-
+        self.username = get_username()
+        self.update_username = update_username
         self.account_view = ttk.Frame(self)
         self.account_view.pack(padx=5, pady=(0, 5), expand=True, side="left")
         self.profile_username = ttk.Label(self.account_view,
                                           font=("Helvetica", 16, "bold")
                                           )
+        self.account_list_widgets = []
         self.selected_pfp = "public/images/meh.png"
         if get_username() == "Guest":
             picture = "public/images/meh.png"
@@ -64,10 +67,10 @@ class AccountMenu(ttk.LabelFrame):
                                       padding=5,
                                       width=42,
                                       command=lambda: account_delete.AccountDelete(self,
-                                                                                   dashboard_page,
                                                                                    get_username,
                                                                                    update_username
                                                                                    ))
+
         if self.profile_username.cget("text") == "Guest":
             self.del_account.config(state="disabled")
             self.account_change.configure(state="disabled")
@@ -78,24 +81,7 @@ class AccountMenu(ttk.LabelFrame):
         self.account_list_frame.pack(padx=5, pady=5, fill="both", expand=True, side="top")
         self.account_list = ScrolledFrame(self.account_list_frame)
         self.account_list.pack(fill="both", expand=True)
-        if get_username():
-            for account in self.database.return_all("accounts"):
-                account_frame = AccountWidget(
-                    self.account_list,
-                    account["username"],
-                    lambda e: account_in.AccountIn(
-                        account["username"],
-                        self,
-                        get_username,
-                        update_username
-                    )
-                )
-                account_frame.pack(padx=5, pady=5, fill="x", expand=True, side="top")
-        else:
-            account_frame = ttk.Label(self.account_list,
-                                      text="No accounts at the moment!\nClick sign up to make your first account."
-                                      )
-            account_frame.pack(padx=5, pady=5, fill="x", expand=True, side="top")
+        self.account_list_load()
         self.sign_up = ttk.Button(self.account_view2,
                                   text="Create Account",
                                   padding=5,
@@ -104,6 +90,30 @@ class AccountMenu(ttk.LabelFrame):
         self.del_account.pack(padx=5, pady=5, fill="x", side="bottom")
         self.sign_up.pack(padx=5, pady=5, fill="x", side="bottom")
         self.account_view2.pack(padx=5, pady=5, fill="both", expand=True, side="right")
+
+    def account_list_load(self):
+        for widgets in self.account_list_widgets:
+            widgets.forget()
+        self.account_list_widgets = []
+        if self.username:
+            for account in self.database.return_all("accounts"):
+                account_frame = AccountWidget(
+                    self.account_list,
+                    account["username"],
+                    lambda e: account_in.AccountIn(
+                    account["username"],
+                        self,
+                        self.username,
+                        self.update_username
+                    )
+                )
+                self.account_list_widgets.append(account_frame)
+        else:
+            account_frame = ttk.Label(
+                self.account_list,
+                text="No accounts at the moment!\nClick sign up to make your first account."
+            )
+        account_frame.pack(padx=5, pady=5, fill="x", expand=True, side="top")
 
     # function named sign_out_cmd to not mix up with button sign_out
     def sign_out_cmd(self, update_username):
@@ -118,6 +128,8 @@ class AccountMenu(ttk.LabelFrame):
             image=icon_size_1
         )
         self.profile_picture.image = icon_size_1
+        self.master.account_page_end_event(self.username)
+        self.account_list_load()
 
     def update_ui(self, username):
         self.profile_username.config(text=username)
