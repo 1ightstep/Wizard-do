@@ -1,5 +1,7 @@
-import ttkbootstrap as ttk
 import tkinter as tk
+
+import ttkbootstrap as ttk
+
 from components import placeholder_entry
 
 
@@ -10,9 +12,9 @@ class TimeSelector(ttk.Frame):
         self.hour = tk.StringVar(value="00")
         self.minute = tk.StringVar(value="00")
 
-        self.hour_spinbox = ttk.Spinbox(self, from_=0, to=23, wrap=True,  textvariable=self.hour, width=2)
+        self.hour_spinbox = ttk.Spinbox(self, from_=0, to=23, wrap=True, textvariable=self.hour, width=2)
         self.colon_label = ttk.Label(self, text=":")
-        self.minute_spinbox = ttk.Spinbox(self, from_=0, to=59, wrap=True,  textvariable=self.minute, width=2)
+        self.minute_spinbox = ttk.Spinbox(self, from_=0, to=59, wrap=True, textvariable=self.minute, width=2)
 
         self.hour_spinbox.pack(side=tk.LEFT)
         self.colon_label.pack(side=tk.LEFT)

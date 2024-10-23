@@ -1,16 +1,17 @@
 import customtkinter as ctk
-from tkinter import messagebox
+from PIL import Image, ImageTk
+
 from database.database import Database
 
 
 class AccountDelete(ctk.CTk):
-    def __init__(self, account_page, dashboard_page, tasks_page):
+    def __init__(self, account_page, dashboard_page, get_username, update_username):
         super().__init__()
         self.title("Delete Account")
-        self.database = Database("/database/databases")
+        self.database = Database("/database/database")
         self.geometry("500x400")
         self.resizable(False, False)
-        self.iconbitmap("public/images/acc.ico")
+        self.iconbitmap("public/images/Wizard-Do.ico")
         self.header = ctk.CTkLabel(self,
                                    text="Delete Account",
                                    font=("Helvetica", 20, "bold"))
@@ -31,25 +32,25 @@ class AccountDelete(ctk.CTk):
                                     command=lambda: self.delete(
                                         self.entry1.get(),
                                         self.entry2.get(),
-                                        account_page,
                                         dashboard_page,
-                                        tasks_page
+                                        get_username,
+                                        update_username
                                     ))
         self.submit.pack(pady=(0, 25), padx=10, side="right", anchor="se")
         self.entry1.bind("<Return>", lambda e: self.delete(
-                                        self.entry1.get(),
-                                        self.entry2.get(),
-                                        account_page,
-                                        dashboard_page,
-                                        tasks_page
-                                    ))
+            self.entry1.get(),
+            self.entry2.get(),
+            dashboard_page,
+            get_username,
+            update_username
+        ))
         self.entry2.bind("<Return>", lambda e: self.delete(
-                                        self.entry1.get(),
-                                        self.entry2.get(),
-                                        account_page,
-                                        dashboard_page,
-                                        tasks_page
-                                    ))
+            self.entry1.get(),
+            self.entry2.get(),
+            dashboard_page,
+            get_username,
+            update_username
+        ))
         self.protocol("WM_DELETE_WINDOW", lambda: self.withdraw())
         self.mainloop()
 
@@ -61,19 +62,23 @@ class AccountDelete(ctk.CTk):
             self.entry1.configure(show="•")
             self.entry2.configure(show="•")
 
-    def delete(self, password, confirm_password, account_page, dashboard_page, tasks_page):
-        account_del = self.database.return_value("settings", "signed_in")
+    def delete(self, password, confirm_password, dashboard_page, get_username, update_username):
+        account_del = get_username
         if self.entry1.get() != self.entry2.get():
-            messagebox.showwarning("Passwords do not match!", "Passwords do not match, please try again")
+            self.entry1.configure(border_color="#dd0525")
+            self.entry2.configure(border_color="#dd0525")
             return
-        if not password or not confirm_password:
-            messagebox.showwarning("Empty Box!", "You forgot to fill in one of the boxes, try again")
+        if not password:
+            self.entry1.configure(border_color="#dd0525")
+            return
+        if not confirm_password:
+            self.entry2.configure(border_color="#dd0525")
             return
         if account_del:
-            messagebox.showinfo("Account Deletion Successful", "Your account has been successfully deleted!")
-            account_page.update_ui("Guest", tasks_page, dashboard_page)
-            dashboard_page.refresh_ui("Guest")
-            self.database.delete_data("accounts", "username", f"{self.database.return_value("settings", "signed_in")}")
-            self.database.delete_data("icon", f"{self.database.return_value("settings", "signed_in")}", "")
+            update_username("Guest")
+            guest_photo = ImageTk.PhotoImage(Image.open("public/images/meh.png"))
+            dashboard_page.refresh_icon(guest_photo)
+            self.database.delete_data("accounts", "username", f"{get_username()}")
+            self.database.delete_data("icon", f"{get_username()}", "")
             self.withdraw()
             return

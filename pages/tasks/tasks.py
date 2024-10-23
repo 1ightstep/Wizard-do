@@ -1,23 +1,22 @@
-import time
-
-import ttkbootstrap as ttk
-import uuid
 import datetime
 import threading
+import time
+import uuid
 
-from pages.tasks.task_form import TaskForm
-from pages.tasks.task import Task
-from pages.tasks.tasks_view import TasksView
-from pages.tasks.tasks_view_filter import TasksViewFilter
+import ttkbootstrap as ttk
 
 from database.database import Database
+from pages.tasks.task import Task
+from pages.tasks.task_form import TaskForm
+from pages.tasks.tasks_view import TasksView
+from pages.tasks.tasks_view_filter import TasksViewFilter
 from utils.ai import AI
 
 
 class Tasks(ttk.Frame):
-    def __init__(self, master):
+    def __init__(self, master, get_username):
         super().__init__(master)
-        self.database = Database("/database/databases")
+        self.database = Database("/database/database")
         self.ai = AI()
         self.tasks_done = 0
         self.main_task_list = []
@@ -45,7 +44,7 @@ class Tasks(ttk.Frame):
         self.tasks_view.pack(side="left", fill="both", expand=True)
 
         self.load_tasks(False)
-        master.protocol("WM_DELETE_WINDOW", self.task_page_end_event)
+        master.protocol("WM_DELETE_WINDOW", lambda: self.task_page_end_event(get_username))
 
     def create_task(self, task_tag, task_name="", task_date="", task_time="", initial_load=False):
         month, day, year = task_date.split("/")
@@ -54,7 +53,6 @@ class Tasks(ttk.Frame):
         try:
             datetime.datetime.strptime(f"{task_date} {task_time}", '%m/%d/%Y %H:%M')
         except ValueError as e:
-            print(e)
             task_date = f"{time.localtime().tm_mon}/{time.localtime().tm_day}/{time.localtime().tm_year}"
 
         task_id = uuid.uuid4()
@@ -83,41 +81,25 @@ class Tasks(ttk.Frame):
         self.tasks_view.add_task(task_widget)
         return task_data_dict
 
-    def load_tasks(self, account):
+    def load_tasks(self, get_username):
         for task in self.main_task_list:
             task["task_widget"].destroy()
         self.main_task_list = []
-        if not account:
-            # initial load
-            if self.database.return_value("settings", "signed_in"):
-                # already signed in
-                try:
-                    for task in self.database.return_all(self.database.return_value("settings", "signed_in")):
-                        self.create_task(
-                            task_tag=task["task_tag"],
-                            task_name=task["task_name"],
-                            task_date=task["task_date"],
-                            task_time=task["task_time"],
-                            initial_load=True
-                        )
-                except Exception:
-                    # probably invalid username
-                    self.database.replace_data("settings", "signed_in", '')
-            else:
-                # on guest account
-                for task in self.database.return_all("Guest"):
-                    self.create_task(
-                        task_tag=task["task_tag"],
-                        task_name=task["task_name"],
-                        task_date=task["task_date"],
-                        task_time=task["task_time"],
-                        initial_load=True
-                    )
+        if not get_username:
+            # initial load, on guest account
+            for task in self.database.return_all("Guest"):
+                self.create_task(
+                    task_tag=task["task_tag"],
+                    task_name=task["task_name"],
+                    task_date=task["task_date"],
+                    task_time=task["task_time"],
+                    initial_load=True
+                )
         else:
             # reload
-            if account != "Guest":
+            if get_username != "Guest":
                 # changing accounts, updating tasks to their list
-                for task in self.database.return_all(f"{account}"):
+                for task in self.database.return_all(f"{get_username}"):
                     self.create_task(
                         task_tag=task["task_tag"],
                         task_name=task["task_name"],
@@ -164,7 +146,10 @@ class Tasks(ttk.Frame):
         if checked_val:
             self.dynamic_task_list = sorted(
                 self.dynamic_task_list,
-                key=lambda task: datetime.datetime.strptime(f"{task['task_date']} {task['task_time']}", '%m/%d/%Y %H:%M')
+                key=lambda task: datetime.datetime.strptime(
+                    f"{task['task_date']} {task['task_time']}",
+                    '%m/%d/%Y %H:%M'
+                )
             )
             self.tasks_view.clear_view()
             self.tasks_view.add_all(self.dynamic_task_list)
@@ -200,7 +185,10 @@ class Tasks(ttk.Frame):
         self.tasks_view_filter.ai_filter_frame.message_box.input.config(state="disabled")
         self.tasks_view_filter.ai_filter_frame.message_box.submit_btn.config(state="disabled")
         self.task_form.submit_btn.config(state="disabled")
-        self.tasks_view_filter.ai_filter_frame.log_box.add_log("Please wait... Generations can take up to 5 minutes.", "primary")
+        self.tasks_view_filter.ai_filter_frame.log_box.add_log("Please wait... Generations can take up to 5 "
+                                                               "minutes.",
+                                                               "primary"
+                                                               )
 
         def thread_work():
             response = self.ai.filter_list(prompt, self.dynamic_task_list)
@@ -211,12 +199,18 @@ class Tasks(ttk.Frame):
                         find_task = next((
                             m_task
                             for m_task in self.main_task_list
-                            if r_task["task_name"] == m_task["task_name"] and r_task["task_date"] == m_task["task_date"] and r_task["task_time"] == m_task["task_time"]
+                            if
+                        r_task["task_name"] == m_task["task_name"] and r_task["task_date"] == m_task["task_date"] and
+                        r_task["task_time"] == m_task["task_time"]
                         ), None)
                         if find_task:
                             self.dynamic_task_list.append(find_task)
                     else:
-                        new_task = self.create_task(r_task["task_tag"], r_task["task_name"], r_task["task_date"], r_task["task_time"])
+                        new_task = self.create_task(r_task["task_tag"],
+                                                    r_task["task_name"],
+                                                    r_task["task_date"],
+                                                    r_task["task_time"]
+                                                    )
                         self.dynamic_task_list.append(new_task)
                 self.tasks_view.clear_view()
                 self.tasks_view.add_all(self.dynamic_task_list)
@@ -226,22 +220,22 @@ class Tasks(ttk.Frame):
             self.tasks_view_filter.ai_filter_frame.message_box.input.config(state="active")
             self.tasks_view_filter.ai_filter_frame.message_box.submit_btn.config(state="active")
             self.task_form.submit_btn.config(state="active")
+
         try:
             threading.Thread(target=thread_work).start()
         except Exception as e:
-            print(e)
             self.tasks_view_filter.ai_filter_frame.log_box.add_log("An error has occurred.", "danger")
             self.tasks_view_filter.ai_filter_frame.message_box.input.config(state="active")
             self.tasks_view_filter.ai_filter_frame.message_box.submit_btn.config(state="active")
             self.task_form.submit_btn.config(state="active")
 
-    def task_page_end_event(self):
+    def task_page_end_event(self, get_username):
         self.dynamic_task_list = self.main_task_list
         for task in self.dynamic_task_list:
             task["task_id"] = ""
             task["task_widget"] = ""
-        if not self.database.return_value("settings", "signed_in"):
+        if not get_username:
             self.database.replace_category("Guest", self.dynamic_task_list)
         else:
-            self.database.replace_category(f"{self.database.return_value("settings", "signed_in")}", self.dynamic_task_list)
+            self.database.replace_category(f"{get_username}", self.dynamic_task_list)
         self.master.destroy()

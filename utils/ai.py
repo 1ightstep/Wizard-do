@@ -1,8 +1,10 @@
-import uuid
-import requests
 import json
-import asyncio
+
 import time
+
+import requests
+
+
 class AI:
     def __init__(self):
         self.url = "https://api.arliai.com/v1/chat/completions"
@@ -33,7 +35,8 @@ class AI:
         *MAKE SURE THE YEAR IS A FOUR-DIGIT NUMBER.
         """ + f"*USE TODAY'S DATE, TIME, AND *DAY* : {time.strftime("%A, %D %B %Y %H:%M:%S", time.localtime())}"
         task_name_list = list(
-            {"to_create": False, "task_tag": task["task_tag"], "task_name": task["task_name"], "task_date": task["task_date"], "task_time": task["task_time"]}
+            {"to_create": False, "task_tag": task["task_tag"], "task_name": task["task_name"],
+             "task_date": task["task_date"], "task_time": task["task_time"]}
             for task in lst
         )
         payload = json.dumps({
@@ -55,6 +58,5 @@ class AI:
                 result = response.json()
             result = eval(result['choices'][0]['message']['content'])
         except Exception as e:
-            print("ai.py", e)
             return {'status': 'error', 'list': []}
         return {'status': 'success', 'list': result}

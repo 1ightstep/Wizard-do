@@ -1,7 +1,8 @@
-import ttkbootstrap as ttk
-import tkinter as tk
-from ttkbootstrap.scrolled import ScrolledFrame
 import time
+import tkinter as tk
+
+import ttkbootstrap as ttk
+from ttkbootstrap.scrolled import ScrolledFrame
 
 from components.placeholder_entry import PlaceholderEntry
 
@@ -76,7 +77,8 @@ class MessageBox(ttk.Frame):
 class Log(ttk.Frame):
     def __init__(self, master, text, style):
         super().__init__(master, style=f"{style}.TFrame")
-        time_label = ttk.Label(self, text=time.strftime("%m/%d/%y %H:%M", time.localtime()), style=f"inverse-{style}.TLabel")
+        time_label = ttk.Label(self, text=time.strftime("%m/%d/%y %H:%M", time.localtime()),
+                               style=f"inverse-{style}.TLabel")
         time_label.pack(side="left", padx=5, pady=1)
 
         text_label = ttk.Label(self, text=text, style=f"inverse-{style}.TLabel")

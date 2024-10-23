@@ -1,13 +1,11 @@
 import ttkbootstrap as ttk
 
-from database.database import Database
 from components import navbar
-
+from database.database import Database
 from pages.accounts import account
-from pages.settings import settings
 from pages.dashboard import dashboard
+from pages.settings import settings
 from pages.tasks import tasks
-
 from public.window_themes import window_themes
 from public.window_themes import window_themes_color
 
@@ -15,27 +13,35 @@ from public.window_themes import window_themes_color
 class Main(ttk.Window):
     def __init__(self):
         super().__init__()
-        self.database = Database("/database/databases")
+        self.database = Database("/database/database")
+        self.iconbitmap("public/images/Wizard-Do.ico")
         self.window_style = ttk.Style(theme="cosmo")
         self.title("Wizard-do")
         self.geometry("1000x600")
         self.current_page = "dashboard"
         self.resizable(True, True)
-        self.username = self.database.return_value("settings", "signed_in")
-        if not self.username:
-            self.username = "Guest"
+        self.username = "Guest"
 
         self.settings_setup()
 
-        self.navbar = (navbar.Navbar(self, self.page_display_logic).pack(side="left", fill="y"))
-        self.tasks_page = tasks.Tasks(self)
+        self.navbar = (navbar.Navbar(self,
+                                     self.page_display_logic).pack(side="left", fill="y"))
+        self.tasks_page = tasks.Tasks(self,
+                                      self.get_username
+                                      )
         self.dashboard_page = dashboard.Dashboard(
             self,
             self.username,
-            self.tasks_page.main_task_list
+            self.tasks_page.main_task_list,
+            self.get_username
         )
-        self.settings_page = settings.Settings(self, self.update_window_theme)
-        self.accounts_page = account.Accounts(self, self.dashboard_page, self.tasks_page)
+        self.settings_page = settings.Settings(self,
+                                               self.update_window_theme)
+        self.accounts_page = account.Accounts(self,
+                                              self.dashboard_page,
+                                              self.get_username,
+                                              self.update_username
+                                              )
         self.dashboard_page.pack(fill="both", expand=True, padx=5)
         self.protocol("WM_DELETE_WINDOW", lambda: self.save_settings())
         self.mainloop()
@@ -47,14 +53,30 @@ class Main(ttk.Window):
         self.accounts_page.forget()
         if page == "dashboard":
             self.dashboard_page.pack(fill="both", expand=True, padx=5)
-            self.dashboard_page.refresh_ui(self.database.return_value("settings", "signed_in"))
+            self.dashboard_page.refresh_ui(
+                self.get_username(),
+                self.tasks_page.main_task_list
+            )
         elif page == "tasks":
             self.tasks_page.pack(fill="both", expand=True, padx=5)
-            self.tasks_page.load_tasks(self.database.return_value("settings", "signed_in"))
+            self.tasks_page.load_tasks(
+                self.get_username()
+            )
         elif page == "settings":
             self.settings_page.pack(fill="both", expand=True, padx=5)
         elif page == "accounts":
             self.accounts_page.pack(fill="both", expand=True, padx=5)
+
+    def update_username(self, username):
+        self.username = username
+        self.tasks_page.load_tasks(username)
+        self.accounts_page.frame.update_ui(username)
+        self.dashboard_page.refresh_ui(
+            username,
+            self.tasks_page.main_task_list)
+
+    def get_username(self):
+        return self.username
 
     def update_window_theme(self, theme):
         self.window_style.theme_use(theme)
@@ -80,8 +102,12 @@ class Main(ttk.Window):
         self.update_window_theme(self.database.return_value("settings", "window_theme"))
 
     def save_settings(self):
-        self.accounts_page.account_page_end_event()
-        self.tasks_page.task_page_end_event()
+        self.accounts_page.account_page_end_event(
+            self.get_username()
+        )
+        self.tasks_page.task_page_end_event(
+            self.get_username()
+        )
         exit()
 
 

@@ -3,9 +3,11 @@ import random
 import time
 
 import ttkbootstrap as ttk
-from ttkbootstrap.scrolled import ScrolledFrame
 from PIL import Image, ImageTk
+from ttkbootstrap.scrolled import ScrolledFrame
+
 from database.database import Database
+
 Image.CUBIC = Image.BICUBIC
 
 
@@ -50,12 +52,13 @@ class InfoFrame(ttk.Frame):
         self.quote = QuoteWidget(self, "Quote of the day", self.get_quote())
         self.quote.grid(row=0, column=0, columnspan=2, sticky="nsew", padx=5, pady=1)
 
-        self.total_tasks = InfoWidget(self,"Total Tasks", len(self.task_list), 1, "Total Tasks")
+        self.total_tasks = InfoWidget(self, "Total Tasks", len(self.task_list), 1, "Total Tasks")
         self.total_tasks.grid(row=1, column=0, sticky="nsew", padx=5, pady=1)
         if len(self.task_list) < 1:
-            self.tasks_completed = InfoWidget(self,"Tasks Completed", self.get_completed_tasks(), 1, "Tasks Completed")
+            self.tasks_completed = InfoWidget(self, "Tasks Completed", self.get_completed_tasks(), 1, "Tasks Completed")
         else:
-            self.tasks_completed = InfoWidget(self, "Tasks Completed", self.get_completed_tasks(), len(task_list), "Tasks Completed")
+            self.tasks_completed = InfoWidget(self, "Tasks Completed", self.get_completed_tasks(), len(task_list),
+                                              "Tasks Completed")
         self.tasks_completed.grid(row=1, column=1, sticky="nsew", padx=5, pady=1)
 
     def get_completed_tasks(self):
@@ -66,7 +69,8 @@ class InfoFrame(ttk.Frame):
             quotes = [quote for quote in f.readlines() if quote != "\n"]
         return random.choice(quotes)
 
-    def refresh_info(self):
+    def refresh_info(self, task_list):
+        self.task_list = task_list
         if len(self.task_list) < 1:
             self.tasks_completed.refresh_ui_info(self.get_completed_tasks(), 1, "Tasks Completed")
         else:
@@ -92,9 +96,10 @@ class TasksFrame(ttk.LabelFrame):
         self.scrolled_frame.pack(fill="both", expand=True)
 
         self.task_widgets = []
-        self.refresh_list(1)
+        self.refresh_list(self.task_list)
 
-    def refresh_list(self, username):
+    def refresh_list(self, task_list):
+        self.task_list = task_list
         filtered_list = list(task for task in self.task_list if task["task_status"] == "ongoing")
         filtered_list = sorted(
             filtered_list,
@@ -109,16 +114,16 @@ class TasksFrame(ttk.LabelFrame):
 
 
 class Dashboard(ttk.Frame):
-    def __init__(self, master, username, task_list):
+    def __init__(self, master, username, task_list, get_username):
         super().__init__(master)
-        self.database = Database("/database/databases")
+        self.database = Database("/database/database")
         self.task_list = task_list
         self.title = ttk.Label(self, text=f"Hello, {username}", font=("Helvetica", 20, "bold"))
         self.title.pack(fill="x", ipady=10)
-        if not self.database.return_value("settings", "signed_in"):
+        if get_username() == "Guest":
             picture = "public/images/meh.png"
         else:
-            picture = self.database.return_value("icon", f"{self.database.return_value("settings", "signed_in")}")
+            picture = self.database.return_value("icon", f"{get_username()}")
         month_to_name = {
             1: "January",
             2: "February",
@@ -133,7 +138,8 @@ class Dashboard(ttk.Frame):
             11: "November",
             12: "December"
         }
-        date = time.strftime(f"%A, {month_to_name[time.localtime(time.time()).tm_mon]} %d, %Y ", time.localtime(time.time()))
+        date = time.strftime(f"%A, {month_to_name[time.localtime(time.time()).tm_mon]} %d, %Y ",
+                             time.localtime(time.time()))
         self.date = ttk.Label(self, text=f"Today is {date}")
         self.date.pack(fill="x")
 
@@ -151,8 +157,10 @@ class Dashboard(ttk.Frame):
         self.tasks_frame = TasksFrame(self, self.task_list)
         self.tasks_frame.place(relx=0.7, rely=0.15, relwidth=0.3, relheight=0.8)
 
-    def refresh_ui(self, username):
-        self.info_frame.refresh_info()
+    def refresh_ui(self, username, task_list):
+        self.task_list = task_list
+        self.info_frame.refresh_info(task_list)
+        self.tasks_frame.refresh_list(task_list)
         if username:
             self.title.configure(text=f"Hello, {username}")
 

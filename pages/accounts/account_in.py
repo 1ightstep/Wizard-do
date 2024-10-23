@@ -1,21 +1,23 @@
 import hashlib
 import smtplib
 from random import randint
+from tkinter import messagebox
 
 import customtkinter as ctk
-from tkinter import messagebox
+from PIL import Image, ImageTk
+
 from database.database import Database
 from pages.accounts import account_recover
 
 
 class AccountIn(ctk.CTk):
-    def __init__(self, username, account_page, dashboard_page, tasks_page):
+    def __init__(self, username, account_page, dashboard_page, get_username, update_username):
         super().__init__()
         self.title("Sign In")
-        self.database = Database("/database/databases")
+        self.database = Database("/database/database")
         self.geometry("500x400")
         self.resizable(False, False)
-        self.iconbitmap("public/images/acc.ico")
+        self.iconbitmap("public/images/Wizard-Do.ico")
         self.header = ctk.CTkLabel(self,
                                    text="Sign In",
                                    font=("Helvetica", 20, "bold"))
@@ -32,35 +34,27 @@ class AccountIn(ctk.CTk):
                                          corner_radius=0,
                                          command=self.show)
         self.checkbox1.pack(pady=5, padx=125, side="top", anchor=ctk.W)
-        self.checkbox2 = ctk.CTkCheckBox(self.frame,
-                                         width=25,
-                                         height=25,
-                                         text="Remember Me",
-                                         corner_radius=0)
-        self.checkbox2.pack(pady=5, padx=125, side="top", anchor=ctk.W)
         self.forgot_password = ctk.CTkButton(self.frame,
                                              width=25,
                                              height=25,
                                              text="Forgot Password?",
                                              border_width=0,
                                              border_color="#dd0525",
-                                             command=lambda: self.save_account(username)
+                                             command=lambda: self.save_account(username, get_username)
                                              )
         self.submit = ctk.CTkButton(self.frame, text="Enter", corner_radius=0, command=lambda: self.login(
             username,
             self.entry.get(),
-            self.checkbox2.get(),
             account_page,
             dashboard_page,
-            tasks_page
+            update_username
         ))
         self.entry.bind("<Return>", lambda e: self.login(
             username,
             self.entry.get(),
-            self.checkbox2.get(),
             account_page,
             dashboard_page,
-            tasks_page
+            update_username
         ))
         self.submit.pack(pady=(0, 25), padx=10, side="right", anchor="se")
         self.forgot_password.pack(pady=(0, 25), padx=10, side="right", anchor="se")
@@ -73,7 +67,7 @@ class AccountIn(ctk.CTk):
         else:
             self.entry.configure(show="•")
 
-    def login(self, username, password, memory, account_page, dashboard_page, tasks_page):
+    def login(self, username, password, account_page, dashboard_page, update_username):
         # return ALL accounts, sift through each one for matching account
         accounts = self.database.return_all("accounts")
         if username == "" or password == "":
@@ -84,30 +78,33 @@ class AccountIn(ctk.CTk):
             message = password.encode()
             hashed.update(message)
             if instance["username"] == username and str(hashed.hexdigest()) == instance["password"]:
-                self.log_check(True, username, memory, account_page, dashboard_page, tasks_page)
+                self.log_check(True, username, account_page, dashboard_page, update_username)
                 return
-        self.log_check(False, None, None, None, None, None)
+        self.log_check(False, None, None, None, None)
 
-    def log_check(self, value, username, memory, account_page, dashboard_page, tasks_page):
+    def log_check(self, value, username, account_page, dashboard_page, update_username):
         if value:
-            account_page.update_ui(username, tasks_page, dashboard_page)
-            tasks_page.load_tasks(username)
-            dashboard_page.refresh_ui(username)
-            if memory:
-                self.database.replace_data("settings", "signed_in", username)
+            account_page.update_ui(username)
+            if username == "Guest":
+                image = ImageTk.PhotoImage(Image.open("public/images/meh.png"))
+            else:
+                image = ImageTk.PhotoImage(Image.open(f"{self.database.return_value("icon", username)}").resize(
+                    (75, 75)))
+            update_username(username)
+            dashboard_page.refresh_icon(image)
             self.protocol("WM_DELETE_WINDOW", self.withdraw())
 
-    def save_account(self, username):
+    def save_account(self, username, get_username):
         try:
             self.smtpserver = smtplib.SMTP_SSL('smtp.gmail.com', 465)
             self.smtpserver.ehlo()
             self.smtpserver.login('wizarddoauthteam@gmail.com', 'dolm zzwc bppk uasa')
-            self.confirm_number = randint(111111, 999999)
+            self.confirm_number = randint(100000, 999999)
             self.smtpserver.sendmail(
                 "wizarddoauthteam@gmail.com",
                 f"{self.database.search("accounts", "username", f"{username}")["email"]}",
                 f"""\n
-                Hello new user!\n\n
+                Hello user!\n\n
                 Your verification code is {str(self.confirm_number)}.
                 \nIf you got this email by mistake, ignore it.
                 \n\nFrom,\nThe Wizard-Do Authentication Team
@@ -122,5 +119,5 @@ class AccountIn(ctk.CTk):
             return
         self.smtpserver.close()
         self.frame.pack_forget()
-        self.frame = account_recover.AccountRecover(self, self.confirm_number)
+        self.frame = account_recover.AccountRecover(self, self.confirm_number, get_username)
         self.frame.pack(fill="both", expand=True)

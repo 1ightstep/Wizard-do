@@ -1,20 +1,21 @@
-import time
-from random import randint
-import customtkinter as ctk
-from tkinter import messagebox
-from database.database import Database
 import hashlib
 import smtplib
+from random import randint
+from tkinter import messagebox
+
+import customtkinter as ctk
+
+from database.database import Database
 
 
 class AccountCreate(ctk.CTk):
-    def __init__(self, account_page, dashboard_page, tasks_page):
+    def __init__(self, account_page):
         super().__init__()
         self.title("Create Account")
-        self.database = Database("/database/databases")
+        self.database = Database("/database/database")
         self.geometry("500x400")
         self.resizable(False, False)
-        self.iconbitmap("public/images/acc.ico")
+        self.iconbitmap("public/images/Wizard-Do.ico")
 
         self.header = ctk.CTkLabel(self,
                                    text="Sign Up",
@@ -24,16 +25,16 @@ class AccountCreate(ctk.CTk):
         self.step_frame = ctk.CTkFrame(self)
         self.step_frame.pack(fill="both", expand=True)
 
-        self.current_step = AccountCreate1(self.step_frame, account_page, dashboard_page, tasks_page)
+        self.current_step = AccountCreate1(self.step_frame, account_page)
 
         self.protocol("WM_DELETE_WINDOW", lambda: self.withdraw())
         self.mainloop()
 
 
 class AccountCreate1(ctk.CTkFrame):
-    def __init__(self, master, account_page, dashboard_page, tasks_page):
+    def __init__(self, master, account_page):
         super().__init__(master)
-        self.database = Database("/database/databases")
+        self.database = Database("/database/database")
         self.frame1 = ctk.CTkFrame(master)
         self.frame1.pack(fill="both", expand=True)
         self.entry1 = ctk.CTkEntry(self.frame1, placeholder_text="Username", corner_radius=5, width=250, height=50)
@@ -76,9 +77,7 @@ class AccountCreate1(ctk.CTkFrame):
             ],
             self.confirm_number,
             self.message.get(),
-            account_page,
-            dashboard_page,
-            tasks_page
+            account_page
         ))
         self.submit2.pack(fill="x", expand=True, pady=5, padx=10, side="bottom", anchor="n")
 
@@ -125,7 +124,7 @@ class AccountCreate1(ctk.CTkFrame):
             self.smtpserver = smtplib.SMTP_SSL('smtp.gmail.com', 465)
             self.smtpserver.ehlo()
             self.smtpserver.login('wizarddoauthteam@gmail.com', 'dolm zzwc bppk uasa')
-            self.confirm_number = randint(111111, 999999)
+            self.confirm_number = randint(100000, 999999)
             self.smtpserver.sendmail(
                 "wizarddoauthteam@gmail.com",
                 f"{email}",
@@ -147,21 +146,20 @@ class AccountCreate1(ctk.CTkFrame):
         self.destroy()
         self.frame2.pack()
 
-    def sign_up_step_3(self, new_account, confirm_number, number, account_page, dashboard_page, tasks_page):
+    def sign_up_step_3(self, new_account, confirm_number, number, account_page):
         if str(confirm_number) == number:
-            self.sign_up_step_4(new_account, account_page, dashboard_page, tasks_page)
+            self.sign_up_step_4(new_account, account_page)
         else:
             self.message.configure(
                 border_color="#dd0525"
             )
 
-    def sign_up_step_4(self, new_account, account_page, dashboard_page, tasks_page):
-        self.database = Database("/database/databases")
-        account_page.update_ui(new_account[0], tasks_page, dashboard_page)
+    def sign_up_step_4(self, new_account, account_page):
+        self.database = Database("/database/database")
+        account_page.update_ui(new_account[0])
         hashed = hashlib.md5()
         message = new_account[2].encode()
         hashed.update(message)
-        print(hashed.hexdigest())
         self.database.add_data("accounts",
                                {'username': new_account[0],
                                 'password': str(hashed.hexdigest()),
@@ -169,6 +167,5 @@ class AccountCreate1(ctk.CTkFrame):
                                 })
         self.database.add_data("icon", {f"{new_account[0]}": "public/images/meh.png"})
         self.database.create_data_category(new_account[0])
-        self.database.replace_data("settings", "signed_in", f"{new_account[0]}")
-        messagebox.showinfo("Reopen the app to start using your account.")
+        messagebox.showinfo("Notice!", "Reopen the app to start using your account.")
         exit()

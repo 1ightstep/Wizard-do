@@ -31,4 +31,3 @@ class TasksView(ttk.LabelFrame):
     def add_task(self, task_widget):
         self.task_widget_list.append(task_widget)
         task_widget.pack(side="top", padx=10, fill="both", expand=True)
-

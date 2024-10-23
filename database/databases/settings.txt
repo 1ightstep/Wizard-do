@@ -1,2 +1,0 @@
-{'window_theme': 'darkly'}
-{'signed_in': ''}
