@@ -79,7 +79,7 @@ class AccountIn(ctk.CTk):
             if instance["username"] == username and str(hashed.hexdigest()) == instance["password"]:
                 self.log_check(True, username, account_page, update_username)
                 return
-        self.log_check(False, None, None, None, None)
+        self.log_check(False, None, None, None)
 
     def log_check(self, value, username, account_page, update_username):
         if value:
