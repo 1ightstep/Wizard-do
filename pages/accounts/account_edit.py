@@ -116,7 +116,7 @@ class AccountEdit(ctk.CTk):
                                            self.account,
                                            {
                                                'username': self.account["username"],
-                                               'password': hashed,
+                                               'password': hashed.hexdigest(),
                                                'email': self.account["email"]
                                            })
             self.protocol("WM_DELETE_WINDOW", self.withdraw())

@@ -5,7 +5,7 @@ from database.database import Database
 
 
 class AccountDelete(ctk.CTk):
-    def __init__(self, account_page, dashboard_page, get_username, update_username):
+    def __init__(self, get_username, update_username):
         super().__init__()
         self.title("Delete Account")
         self.database = Database("/database/database")
@@ -32,7 +32,6 @@ class AccountDelete(ctk.CTk):
                                     command=lambda: self.delete(
                                         self.entry1.get(),
                                         self.entry2.get(),
-                                        dashboard_page,
                                         get_username,
                                         update_username
                                     ))
@@ -40,14 +39,12 @@ class AccountDelete(ctk.CTk):
         self.entry1.bind("<Return>", lambda e: self.delete(
             self.entry1.get(),
             self.entry2.get(),
-            dashboard_page,
             get_username,
             update_username
         ))
         self.entry2.bind("<Return>", lambda e: self.delete(
             self.entry1.get(),
             self.entry2.get(),
-            dashboard_page,
             get_username,
             update_username
         ))
@@ -62,7 +59,7 @@ class AccountDelete(ctk.CTk):
             self.entry1.configure(show="•")
             self.entry2.configure(show="•")
 
-    def delete(self, password, confirm_password, dashboard_page, get_username, update_username):
+    def delete(self, password, confirm_password, get_username, update_username):
         account_del = get_username
         if self.entry1.get() != self.entry2.get():
             self.entry1.configure(border_color="#dd0525")
@@ -75,11 +72,10 @@ class AccountDelete(ctk.CTk):
             self.entry2.configure(border_color="#dd0525")
             return
         if account_del:
-
-            guest_photo = ImageTk.PhotoImage(Image.open("public/images/meh.png"))
-            dashboard_page.refresh_icon(guest_photo)
+            print(get_username())
             self.database.delete_data("accounts", "username", f"{get_username()}")
-            self.database.delete_data("icon", f"{get_username()}", "")
+            self.database.delete_data("icon", get_username(), self.database.return_value("icon", get_username()))
+            self.database.delete_category(get_username())
             self.withdraw()
             update_username("Guest")
             return

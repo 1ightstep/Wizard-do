@@ -160,7 +160,6 @@ class AccountCreate1(ctk.CTkFrame):
         hashed = hashlib.md5()
         message = new_account[2].encode()
         hashed.update(message)
-        print(new_account)
         self.database.add_data("accounts",
                                {'username': new_account[0],
                                 'password': str(hashed.hexdigest()),

@@ -109,6 +109,10 @@ class Database:
             self.replace_category(category_name, lines)
             f.close()
 
+    def delete_category(self, category_name: str) -> None:
+        self.category_error(category_name)
+        os.remove(f'{self.database_dir_path}/{category_name}.txt')
+
     def return_value(self, category_name: str, key: str) -> str:
         self.category_error(category_name)
         with open(f'{self.database_dir_path}/{category_name}.txt', 'r') as f:

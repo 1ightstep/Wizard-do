@@ -207,11 +207,9 @@ class Tasks(ttk.Frame):
 
     def load_tasks(self, account):
         self.username = account
-        for task in self.main_task_list:
-            task["task_widget"].destroy()
+        self.tasks_view.clear_view()
         self.main_task_list = []
         if not account:
-            # initial load
             if self.database.return_value("settings", "signed_in"):
                 # already signed in
                 try:
@@ -221,6 +219,7 @@ class Tasks(ttk.Frame):
                             task_name=task["task_name"],
                             task_date=task["task_date"],
                             task_time=task["task_time"],
+                            task_status=task["task_status"],
                             initial_load=True
                         )
                 except Exception:
@@ -234,6 +233,7 @@ class Tasks(ttk.Frame):
                         task_name=task["task_name"],
                         task_date=task["task_date"],
                         task_time=task["task_time"],
+                        task_status=task["task_status"],
                         initial_load=True
                     )
         else:
@@ -246,6 +246,7 @@ class Tasks(ttk.Frame):
                         task_name=task["task_name"],
                         task_date=task["task_date"],
                         task_time=task["task_time"],
+                        task_status=task["task_status"],
                         initial_load=True
                     )
             else:
@@ -256,5 +257,6 @@ class Tasks(ttk.Frame):
                         task_name=task["task_name"],
                         task_date=task["task_date"],
                         task_time=task["task_time"],
+                        task_status=task["task_status"],
                         initial_load=True
                     )

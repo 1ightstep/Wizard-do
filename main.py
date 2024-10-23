@@ -109,15 +109,6 @@ class Main(ttk.Window):
 
         self.update_window_theme(self.database.return_value("settings", "window_theme"))
 
-    def save_settings(self):
-        self.accounts_page.account_page_end_event(
-            self.get_username()
-        )
-        self.tasks_page.task_page_end_event(
-            self.get_username()
-        )
-        exit()
-
 
 if __name__ == "__main__":
     Main()

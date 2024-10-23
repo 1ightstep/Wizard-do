@@ -15,13 +15,15 @@ class Accounts(ttk.Frame):
         self.frame.pack(fill="both", expand=True)
 
     def account_page_end_event(self, get_username):
-        print(get_username)
-        current_account_icon = self.database.return_value("icon",
-                                                          f'{get_username}')
-        current_account = self.database.search("accounts",
-                                               'username',
-                                               get_username,
-                                               )
+        current_account_icon = self.database.return_value(
+            "icon",
+            get_username
+        )
+        current_account = self.database.search(
+            "accounts",
+            'username',
+            get_username,
+        )
         if current_account:
             new_account = {
                 'username': get_username,
@@ -31,18 +33,20 @@ class Accounts(ttk.Frame):
             new_account_icon = {
                 f'{current_account["username"]}': f'{self.frame.selected_pfp}'
             }
-            self.database.replace_specific("accounts",
-                                           {
-                                               'username': get_username,
-                                               'password': current_account["password"],
-                                               'email': current_account["email"]
-                                           },
-                                           new_account
-                                           )
-            self.database.replace_specific("icon",
-                                           {
-                                               f'{current_account["username"]}':
-                                                   f'{current_account_icon}'
-                                           },
-                                           new_account_icon
-                                           )
+            self.database.replace_specific(
+                "accounts",
+                {
+                    'username': get_username,
+                    'password': current_account["password"],
+                    'email': current_account["email"]
+                },
+                new_account
+            )
+            self.database.replace_specific(
+                "icon",
+                {
+                    f'{current_account["username"]}':
+                    f'{current_account_icon}'
+                },
+                new_account_icon
+            )
