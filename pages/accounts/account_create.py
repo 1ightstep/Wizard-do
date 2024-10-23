@@ -160,10 +160,11 @@ class AccountCreate1(ctk.CTkFrame):
         hashed = hashlib.md5()
         message = new_account[2].encode()
         hashed.update(message)
+        print(new_account)
         self.database.add_data("accounts",
                                {'username': new_account[0],
                                 'password': str(hashed.hexdigest()),
-                                'email': new_account[2]
+                                'email': new_account[1]
                                 })
         self.database.add_data("icon", {f"{new_account[0]}": "public/images/meh.png"})
         self.database.create_data_category(new_account[0])

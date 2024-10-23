@@ -75,10 +75,11 @@ class AccountDelete(ctk.CTk):
             self.entry2.configure(border_color="#dd0525")
             return
         if account_del:
-            update_username("Guest")
+
             guest_photo = ImageTk.PhotoImage(Image.open("public/images/meh.png"))
             dashboard_page.refresh_icon(guest_photo)
             self.database.delete_data("accounts", "username", f"{get_username()}")
             self.database.delete_data("icon", f"{get_username()}", "")
             self.withdraw()
+            update_username("Guest")
             return

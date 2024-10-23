@@ -7,7 +7,7 @@ from pages.accounts import account_in, account_edit, account_create, account_del
 
 
 class AccountMenu(ttk.LabelFrame):
-    def __init__(self, master, dashboard_page, get_username, update_username):
+    def __init__(self, master, get_username, update_username):
         super().__init__(master=master, text="Profile")
         self.database = Database("/database/database")
 
@@ -16,6 +16,7 @@ class AccountMenu(ttk.LabelFrame):
         self.profile_username = ttk.Label(self.account_view,
                                           font=("Helvetica", 16, "bold")
                                           )
+        self.selected_pfp = "public/images/meh.png"
         if get_username() == "Guest":
             picture = "public/images/meh.png"
             self.profile_username.config(text="Guest")
@@ -39,7 +40,6 @@ class AccountMenu(ttk.LabelFrame):
                                                    padding=0,
                                                    command=lambda: account_image.AccountImage(self,
                                                                                               self,
-                                                                                              dashboard_page,
                                                                                               get_username
                                                                                               )
                                                    )
@@ -48,7 +48,6 @@ class AccountMenu(ttk.LabelFrame):
                                    text="Sign Out",
                                    padding=5,
                                    command=lambda: self.sign_out_cmd(
-                                       dashboard_page,
                                        update_username
                                    ))
         self.sign_out.pack(padx=5, pady=5, fill="both", expand=True, side="top")
@@ -81,14 +80,16 @@ class AccountMenu(ttk.LabelFrame):
         self.account_list.pack(fill="both", expand=True)
         if get_username():
             for account in self.database.return_all("accounts"):
-                account_frame = AccountWidget(self.account_list,
-                                              account["username"],
-                                              lambda e: account_in.AccountIn(account["username"],
-                                                                   self,
-                                                                   dashboard_page,
-                                                                   get_username,
-                                                                   update_username
-                                                                   ))
+                account_frame = AccountWidget(
+                    self.account_list,
+                    account["username"],
+                    lambda e: account_in.AccountIn(
+                        account["username"],
+                        self,
+                        get_username,
+                        update_username
+                    )
+                )
                 account_frame.pack(padx=5, pady=5, fill="x", expand=True, side="top")
         else:
             account_frame = ttk.Label(self.account_list,
@@ -105,17 +106,18 @@ class AccountMenu(ttk.LabelFrame):
         self.account_view2.pack(padx=5, pady=5, fill="both", expand=True, side="right")
 
     # function named sign_out_cmd to not mix up with button sign_out
-    def sign_out_cmd(self, dashboard_page, update_username):
+    def sign_out_cmd(self, update_username):
         update_username("Guest")
-        guest_photo = ImageTk.PhotoImage(Image.open("public/images/meh.png"))
-        dashboard_page.refresh_icon(guest_photo)
+        guest_photo = ImageTk.PhotoImage(Image.open("public/images/meh.png").resize((125, 125)))
+        self.update_icon("public/images/meh.png", guest_photo)
 
-    def update_icon(self, icon_var, icon_size_1, icon_size_2, dashboard_page):
-        dashboard_page.refresh_icon(icon_size_2)
+    def update_icon(self, icon_var, icon_size_1):
+        self.selected_pfp = icon_var
         self.profile_picture.configure(
             text=icon_var,
             image=icon_size_1
         )
+        self.profile_picture.image = icon_size_1
 
     def update_ui(self, username):
         self.profile_username.config(text=username)
@@ -131,9 +133,6 @@ class AccountMenu(ttk.LabelFrame):
             self.del_account.config(state="normal")
             self.account_change.configure(state="normal")
             self.sign_out.configure(state="normal")
-
-    def get_important_widgets(self):
-        return [self.profile_username, self.profile_picture]
 
 
 class AccountWidget(ttk.Frame):

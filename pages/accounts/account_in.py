@@ -11,8 +11,9 @@ from pages.accounts import account_recover
 
 
 class AccountIn(ctk.CTk):
-    def __init__(self, username, account_page, dashboard_page, get_username, update_username):
+    def __init__(self, username, account_page, get_username, update_username):
         super().__init__()
+        self.username = username
         self.title("Sign In")
         self.database = Database("/database/database")
         self.geometry("500x400")
@@ -46,14 +47,12 @@ class AccountIn(ctk.CTk):
             username,
             self.entry.get(),
             account_page,
-            dashboard_page,
             update_username
         ))
         self.entry.bind("<Return>", lambda e: self.login(
             username,
             self.entry.get(),
             account_page,
-            dashboard_page,
             update_username
         ))
         self.submit.pack(pady=(0, 25), padx=10, side="right", anchor="se")
@@ -67,7 +66,7 @@ class AccountIn(ctk.CTk):
         else:
             self.entry.configure(show="•")
 
-    def login(self, username, password, account_page, dashboard_page, update_username):
+    def login(self, username, password, account_page, update_username):
         # return ALL accounts, sift through each one for matching account
         accounts = self.database.return_all("accounts")
         if username == "" or password == "":
@@ -78,20 +77,23 @@ class AccountIn(ctk.CTk):
             message = password.encode()
             hashed.update(message)
             if instance["username"] == username and str(hashed.hexdigest()) == instance["password"]:
-                self.log_check(True, username, account_page, dashboard_page, update_username)
+                self.log_check(True, username, account_page, update_username)
                 return
         self.log_check(False, None, None, None, None)
 
-    def log_check(self, value, username, account_page, dashboard_page, update_username):
+    def log_check(self, value, username, account_page, update_username):
         if value:
+            update_username(username)
+
             account_page.update_ui(username)
             if username == "Guest":
-                image = ImageTk.PhotoImage(Image.open("public/images/meh.png"))
+                image = ImageTk.PhotoImage(Image.open("public/images/meh.png").resize((125, 125)))
             else:
-                image = ImageTk.PhotoImage(Image.open(f"{self.database.return_value("icon", username)}").resize(
-                    (75, 75)))
-            update_username(username)
-            dashboard_page.refresh_icon(image)
+                image = ImageTk.PhotoImage(Image.open(self.database.return_value("icon", username)).resize((125, 125)))
+            account_page.update_icon(
+                self.database.return_value("icon", username),
+                image
+            )
             self.protocol("WM_DELETE_WINDOW", self.withdraw())
 
     def save_account(self, username, get_username):
@@ -119,5 +121,5 @@ class AccountIn(ctk.CTk):
             return
         self.smtpserver.close()
         self.frame.pack_forget()
-        self.frame = account_recover.AccountRecover(self, self.confirm_number, get_username)
+        self.frame = account_recover.AccountRecover(self, self.confirm_number, self.username)
         self.frame.pack(fill="both", expand=True)

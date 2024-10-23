@@ -6,7 +6,7 @@ from public.images.resources import img_to_number
 
 
 class AccountImage(ttk.Toplevel):
-    def __init__(self, master, account_page, dashboard_page, get_username):
+    def __init__(self, master, account_page, get_username):
         super().__init__(master)
         self.title("Account Profile Pictures")
         self.iconbitmap("public/images/Wizard-Do.ico")
@@ -15,9 +15,9 @@ class AccountImage(ttk.Toplevel):
         self.account = self.database.search("accounts",
                                             "username",
                                             f'{get_username()}')
-        self.create_icons(account_page, dashboard_page)
+        self.create_icons(account_page)
 
-    def create_icons(self, account_page, dashboard_page):
+    def create_icons(self, account_page):
         img = 1
         for row in range(5):
             for col in range(5):
@@ -29,8 +29,6 @@ class AccountImage(ttk.Toplevel):
                 image.bind("<Button-1>", lambda e, icon_var=self.pictures[img]: account_page.update_icon(
                     icon_var,
                     ImageTk.PhotoImage(Image.open(icon_var).resize((125, 125))),
-                    ImageTk.PhotoImage(Image.open(icon_var).resize((75, 75))),
-                    dashboard_page
                 ))
 
                 img += 1

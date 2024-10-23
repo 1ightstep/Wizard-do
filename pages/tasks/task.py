@@ -1,10 +1,9 @@
-import tkinter as tk
-
 import ttkbootstrap as ttk
+import tkinter as tk
 
 
 class Task(ttk.LabelFrame):
-    def __init__(self, master, task_id, task_tag, task_name, task_date, task_time, destroy_func, done_func):
+    def __init__(self, master, task_id, task_tag, task_name, task_date, task_time, task_status, destroy_func, done_func):
         self.styles = {
             "Goal": {
                 "TLabelframe": "primary",
@@ -37,10 +36,12 @@ class Task(ttk.LabelFrame):
                 "TCheckbutton": "success.TCheckbutton"
             }
         }
-        super().__init__(master=master, text=f"{task_date}, {task_time}",
-                         bootstyle=self.styles[task_tag]["TLabelframe"], padding=5)
+        super().__init__(master=master, text=f"{task_date}, {task_time}", bootstyle=self.styles[task_tag]["TLabelframe"], padding=5)
         self.check_var = tk.BooleanVar()
-        self.check_var.set(False)
+        if task_status == "ongoing":
+            self.check_var.set(False)
+        else:
+            self.check_var.set(True)
         self.done_btn = ttk.Checkbutton(
             self,
             style=self.styles[task_tag]["TCheckbutton"],
@@ -52,6 +53,5 @@ class Task(ttk.LabelFrame):
         self.task_name = ttk.Label(self, text=task_name, style=self.styles[task_tag]["TLabel"])
         self.task_name.pack(side="left")
 
-        self.destroy_btn = ttk.Button(self, text="Delete", style=self.styles[task_tag]["TButton"],
-                                      command=lambda: destroy_func(task_id))
+        self.destroy_btn = ttk.Button(self, text="Destroy", style=self.styles[task_tag]["TButton"], command=lambda: destroy_func(task_id))
         self.destroy_btn.pack(side="right")

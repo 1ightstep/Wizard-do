@@ -22,12 +22,12 @@ class Main(ttk.Window):
         self.resizable(True, True)
         self.username = "Guest"
 
-        self.settings_setup()
+        self.initial_setup()
 
         self.navbar = (navbar.Navbar(self,
                                      self.page_display_logic).pack(side="left", fill="y"))
         self.tasks_page = tasks.Tasks(self,
-                                      self.get_username
+                                      "Guest"
                                       )
         self.dashboard_page = dashboard.Dashboard(
             self,
@@ -38,13 +38,16 @@ class Main(ttk.Window):
         self.settings_page = settings.Settings(self,
                                                self.update_window_theme)
         self.accounts_page = account.Accounts(self,
-                                              self.dashboard_page,
                                               self.get_username,
                                               self.update_username
                                               )
         self.dashboard_page.pack(fill="both", expand=True, padx=5)
-        self.protocol("WM_DELETE_WINDOW", lambda: self.save_settings())
+        self.protocol("WM_DELETE_WINDOW", self.end_event)
         self.mainloop()
+
+    def end_event(self):
+        self.tasks_page.task_page_end_event()
+        self.accounts_page.account_page_end_event(self.get_username())
 
     def page_display_logic(self, page):
         self.dashboard_page.forget()
@@ -90,7 +93,7 @@ class Main(ttk.Window):
             )
         self.database.replace_data("settings", "window_theme", ttk.Style().theme_use())
 
-    def settings_setup(self):
+    def initial_setup(self):
         if not self.database.category_exists("settings"):
             self.database.create_data_category("settings")
             self.database.replace_category(
@@ -99,6 +102,11 @@ class Main(ttk.Window):
                     {"window_theme": "cosmo"},
                 ]
             )
+        categories = ["Guest", "accounts", "icon"]
+        for category in categories:
+            if not self.database.category_exists(category):
+                self.database.create_data_category(category)
+
         self.update_window_theme(self.database.return_value("settings", "window_theme"))
 
     def save_settings(self):

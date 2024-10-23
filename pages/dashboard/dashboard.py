@@ -143,14 +143,6 @@ class Dashboard(ttk.Frame):
         self.date = ttk.Label(self, text=f"Today is {date}")
         self.date.pack(fill="x")
 
-        self.picture_file = ImageTk.PhotoImage(Image.open(picture).resize((75, 75)))
-        self.label = ttk.Label(self,
-                               image=self.picture_file,
-                               )
-        self.label.image = picture
-        self.label.pack_propagate(False)
-        self.label.place(relx=0.98, rely=0.02, anchor="ne")
-
         self.info_frame = InfoFrame(self, self.task_list)
         self.info_frame.place(relx=0, rely=0.15, relwidth=0.7, relheight=0.8)
 
@@ -164,6 +156,3 @@ class Dashboard(ttk.Frame):
         if username:
             self.title.configure(text=f"Hello, {username}")
 
-    def refresh_icon(self, icon):
-        self.label.configure(image=icon)
-        self.label.image = icon
