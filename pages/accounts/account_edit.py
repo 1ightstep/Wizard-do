@@ -16,31 +16,55 @@ class AccountEdit(ctk.CTk):
         self.header = ctk.CTkLabel(self,
                                    text="Change Password",
                                    font=("Helvetica", 20, "bold"))
-        self.header.pack(fill="x", pady=(10, 0))
+        self.header.pack(fill="x", pady=(20, 20))
         self.frame = ctk.CTkFrame(self)
         self.frame.pack(fill="both", expand=True)
         self.account = self.database.search("accounts",
                                             "username",
                                             f'{get_username()}')
-        self.entry1 = ctk.CTkEntry(self.frame, placeholder_text="Original password", corner_radius=5, width=250,
+
+        self.entry1 = ctk.CTkEntry(self.frame,
+                                   placeholder_text="Original password",
+                                   corner_radius=5,
+                                   width=250,
                                    height=50)
         self.entry1.configure(show="•")
         self.entry1.pack(pady=(40, 5), padx=10, side="top", anchor="n")
-        self.checkbox1 = ctk.CTkCheckBox(self.frame, width=25, height=25, text="Show Password", corner_radius=0,
+
+        self.checkbox1 = ctk.CTkCheckBox(self.frame,
+                                         width=25,
+                                         height=25,
+                                         text="Show Password",
+                                         corner_radius=5,
                                          command=lambda: self.show(1))
         self.checkbox1.pack(pady=5, padx=125, side="top", anchor=ctk.W)
-        self.entry2 = ctk.CTkEntry(self.frame, placeholder_text="New password", corner_radius=5, width=250,
+
+        self.entry2 = ctk.CTkEntry(self.frame,
+                                   placeholder_text="New password",
+                                   corner_radius=5,
+                                   width=250,
                                    height=50)
         self.entry2.configure(show="•")
         self.entry2.pack(pady=5, padx=10, side="top")
-        self.entry3 = ctk.CTkEntry(self.frame, placeholder_text="Confirm password", corner_radius=5, width=250,
+
+        self.entry3 = ctk.CTkEntry(self.frame,
+                                   placeholder_text="Confirm password",
+                                   corner_radius=5,
+                                   width=250,
                                    height=50)
         self.entry3.configure(show="•")
         self.entry3.pack(pady=5, padx=10, side="top")
-        self.checkbox2 = ctk.CTkCheckBox(self.frame, width=25, height=25, text="Show Password", corner_radius=0,
+
+        self.checkbox2 = ctk.CTkCheckBox(self.frame,
+                                         width=25, height=25,
+                                         text="Show Password",
+                                         corner_radius=5,
                                          command=lambda: self.show(2))
         self.checkbox2.pack(pady=5, padx=125, side="top", anchor=ctk.W)
-        self.submit = ctk.CTkButton(self.frame, text="Enter", corner_radius=0,
+
+        self.submit = ctk.CTkButton(self.frame,
+                                    text="Enter",
+                                    corner_radius=5,
                                     command=lambda: self.edit(
                                         self.entry1.get(),
                                         self.entry2.get(),

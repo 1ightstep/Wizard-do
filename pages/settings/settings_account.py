@@ -144,7 +144,6 @@ class AccountMenu(ttk.LabelFrame):
             image=icon_size_1
         )
         self.profile_picture.image = icon_size_1
-        print(self.get_username())
         self.master.account_page_end_event(self.get_username())
         self.account_list_load()
 

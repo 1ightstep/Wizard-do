@@ -22,32 +22,48 @@ class AccountIn(ctk.CTk):
         self.header = ctk.CTkLabel(self,
                                    text="Sign In",
                                    font=("Helvetica", 20, "bold"))
-        self.header.pack(fill="x", pady=(10, 0))
+        self.header.pack(fill="x", pady=(20, 20))
+
         self.frame = ctk.CTkFrame(self)
         self.frame.pack(fill="both", expand=True)
-        self.entry = ctk.CTkEntry(self.frame, placeholder_text="Password", corner_radius=5, width=250, height=50)
+
+        self.entry = ctk.CTkEntry(self.frame,
+                                  placeholder_text="Password",
+                                  corner_radius=5,
+                                  width=250,
+                                  height=50)
+
         self.entry.configure(show="•")
         self.entry.pack(pady=(50, 5), padx=10, side="top")
+
         self.checkbox1 = ctk.CTkCheckBox(self.frame,
                                          width=25,
                                          height=25,
                                          text="Show Password",
-                                         corner_radius=0,
+                                         corner_radius=5,
                                          command=self.show)
         self.checkbox1.pack(pady=5, padx=125, side="top", anchor=ctk.W)
+
         self.forgot_password = ctk.CTkButton(self.frame,
                                              width=25,
                                              height=25,
                                              text="Forgot Password?",
                                              border_width=0,
                                              border_color="#dd0525",
+                                             corner_radius=5,
                                              command=lambda: self.save_account(username, get_username)
                                              )
-        self.submit = ctk.CTkButton(self.frame, text="Enter", corner_radius=0, command=lambda: self.login(
-            username,
-            self.entry.get(),
-            account_page,
-            update_username
+
+        self.submit = ctk.CTkButton(self.frame,
+                                    text="Enter",
+                                    width=125,
+                                    height=25,
+                                    corner_radius=5,
+                                    command=lambda: self.login(
+                                        username,
+                                        self.entry.get(),
+                                        account_page,
+                                        update_username
         ))
         self.entry.bind("<Return>", lambda e: self.login(
             username,
@@ -55,6 +71,7 @@ class AccountIn(ctk.CTk):
             account_page,
             update_username
         ))
+
         self.submit.pack(pady=(0, 25), padx=10, side="right", anchor="se")
         self.forgot_password.pack(pady=(0, 25), padx=10, side="right", anchor="se")
         self.protocol("WM_DELETE_WINDOW", lambda: self.withdraw())

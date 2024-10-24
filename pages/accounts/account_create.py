@@ -11,6 +11,7 @@ from database.database import Database
 class AccountCreate(ctk.CTk):
     def __init__(self, account_page):
         super().__init__()
+        self.configure()
         self.title("Create Account")
         self.database = Database("/database/database")
         self.geometry("500x400")
@@ -20,7 +21,7 @@ class AccountCreate(ctk.CTk):
         self.header = ctk.CTkLabel(self,
                                    text="Sign Up",
                                    font=("Helvetica", 20, "bold"))
-        self.header.pack(fill="x", pady=(10, 0))
+        self.header.pack(fill="x", pady=(5, 5))
 
         self.step_frame = ctk.CTkFrame(self)
         self.step_frame.pack(fill="both", expand=True)
@@ -37,22 +38,50 @@ class AccountCreate1(ctk.CTkFrame):
         self.database = Database("/database/database")
         self.frame1 = ctk.CTkFrame(master)
         self.frame1.pack(fill="both", expand=True)
-        self.entry1 = ctk.CTkEntry(self.frame1, placeholder_text="Username", corner_radius=5, width=250, height=50)
+        self.entry1 = ctk.CTkEntry(self.frame1,
+                                   placeholder_text="Username",
+                                   corner_radius=5,
+                                   width=250,
+                                   height=50)
         self.entry1.pack(pady=(40, 5), padx=10, side="top", anchor="n")
-        self.entry2 = ctk.CTkEntry(self.frame1, placeholder_text="Email", corner_radius=5, width=250, height=50)
+
+        self.entry2 = ctk.CTkEntry(self.frame1,
+                                   placeholder_text="Email",
+                                   corner_radius=5,
+                                   width=250,
+                                   height=50)
         self.entry2.pack(pady=5, padx=10, side="top", anchor="n")
-        self.entry3 = ctk.CTkEntry(self.frame1, placeholder_text="Password", corner_radius=5, width=250, height=50)
+
+        self.entry3 = ctk.CTkEntry(self.frame1,
+                                   placeholder_text="Password",
+                                   corner_radius=5,
+                                   width=250,
+                                   height=50)
         self.entry3.configure(show="•")
         self.entry3.pack(pady=5, padx=10, side="top")
-        self.entry4 = ctk.CTkEntry(self.frame1, placeholder_text="Confirm", corner_radius=5, width=250,
+
+        self.entry4 = ctk.CTkEntry(self.frame1,
+                                   placeholder_text="Confirm",
+                                   corner_radius=5,
+                                   width=250,
                                    height=50)
         self.entry4.configure(show="•")
         self.entry4.pack(pady=5, padx=10, side="top")
-        self.checkbox = ctk.CTkCheckBox(self.frame1, width=25, height=25, text="Show Password", corner_radius=0,
+
+        self.checkbox = ctk.CTkCheckBox(self.frame1,
+                                        width=25,
+                                        height=25,
+                                        text="Show Password",
+                                        corner_radius=5,
                                         command=self.show)
         self.checkbox.pack(pady=5, padx=125, side="top", anchor=ctk.W)
-        self.submit1 = ctk.CTkButton(self.frame1, text="Sign Up", corner_radius=0, command=self.sign_up_step_1)
+
+        self.submit1 = ctk.CTkButton(self.frame1,
+                                     text="Sign Up",
+                                     corner_radius=5,
+                                     command=self.sign_up_step_1)
         self.submit1.pack(pady=(0, 25), padx=10, side="right", anchor="se")
+
         self.entry1.bind("<Return>", lambda e: self.sign_up_step_1())
         self.entry2.bind("<Return>", lambda e: self.sign_up_step_1())
         self.entry3.bind("<Return>", lambda e: self.sign_up_step_1())

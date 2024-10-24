@@ -15,7 +15,7 @@ class AccountDelete(ctk.CTk):
         self.header = ctk.CTkLabel(self,
                                    text="Delete Account",
                                    font=("Helvetica", 20, "bold"))
-        self.header.pack(fill="x", pady=(10, 0))
+        self.header.pack(fill="x", pady=(20, 20))
         self.frame = ctk.CTkFrame(self)
         self.frame.pack(fill="both", expand=True)
         self.entry1 = ctk.CTkEntry(self.frame, placeholder_text="Password", corner_radius=5, width=250, height=50)
@@ -25,10 +25,10 @@ class AccountDelete(ctk.CTk):
                                    height=50)
         self.entry2.configure(show="•")
         self.entry2.pack(pady=5, padx=10, side="top")
-        self.checkbox = ctk.CTkCheckBox(self.frame, width=25, height=25, text="Show Password", corner_radius=0,
+        self.checkbox = ctk.CTkCheckBox(self.frame, width=25, height=25, text="Show Password", corner_radius=5,
                                         command=self.show)
         self.checkbox.pack(pady=5, padx=125, side="top", anchor=ctk.W)
-        self.submit = ctk.CTkButton(self.frame, text="Enter", corner_radius=0,
+        self.submit = ctk.CTkButton(self.frame, text="Enter", corner_radius=5,
                                     command=lambda: self.delete(
                                         self.entry1.get(),
                                         self.entry2.get(),
@@ -72,7 +72,6 @@ class AccountDelete(ctk.CTk):
             self.entry2.configure(border_color="#dd0525")
             return
         if account_del:
-            print(get_username())
             self.database.delete_data("accounts", "username", f"{get_username()}")
             self.database.delete_data("icon", get_username(), self.database.return_value("icon", get_username()))
             self.database.delete_category(get_username())
