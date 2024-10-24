@@ -113,8 +113,8 @@ class AccountMenu(ttk.LabelFrame):
                 account_frame = AccountWidget(
                     self.account_list,
                     account["username"],
-                    lambda e: account_in.AccountIn(
-                        account["username"],
+                    lambda e, acc=account: account_in.AccountIn(
+                        acc["username"],
                         self,
                         self.get_username(),
                         self.update_username
