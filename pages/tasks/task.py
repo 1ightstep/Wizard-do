@@ -53,5 +53,5 @@ class Task(ttk.LabelFrame):
         self.task_name = ttk.Label(self, text=task_name, style=self.styles[task_tag]["TLabel"])
         self.task_name.pack(side="left")
 
-        self.destroy_btn = ttk.Button(self, text="Destroy", style=self.styles[task_tag]["TButton"], command=lambda: destroy_func(task_id))
+        self.destroy_btn = ttk.Button(self, text="Delete", style=self.styles[task_tag]["TButton"], command=lambda: destroy_func(task_id))
         self.destroy_btn.pack(side="right")

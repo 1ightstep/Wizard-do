@@ -129,7 +129,7 @@ class AccountCreate1(ctk.CTkFrame):
     def sign_up_step_1(self):
         accounts = self.database.return_all("accounts")
         for item in self.frame1.winfo_children():
-            if item == ctk.CTkButton:
+            if type(item) is ctk.CTkEntry:
                 item.configure(border_color=['#979DA2', '#565B5E'])
                 if not item.get():
                     item.configure(border_color="#dd0525")

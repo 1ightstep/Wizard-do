@@ -109,6 +109,5 @@ class Main(ttk.Window):
 
         self.update_window_theme(self.database.return_value("settings", "window_theme"))
 
-
 if __name__ == "__main__":
     Main()
