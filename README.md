@@ -1,4 +1,4 @@
-Quick description: Mentored a group of 8th graders to create this production schedule/task manager app.
+Quick description: Mentored a group of 8th graders to create this productivity schedule/task manager app.
 
 Key points:
 - Developed a simple database system from scratch to store tasks and data
